@@ -1,0 +1,4 @@
+config APP_CONFIG_NVS_NAMESPACE
+    string "NVS configuration namespace"
+    help
+        Sets NVS namespace for storing configuration data.
