@@ -27,22 +27,22 @@ esp_err_t app_config_load_element(app_config_element_t *element){
 	switch(element->type){
 	case boolean:		// Boolean storead as uint8_t
 		err = nvs_get_u8(app_config_nvs_hanle, element->short_name, element->value);
-		ESP_LOGI(TAG, "Got %d", *(uint8_t *)element->value);
+		ESP_LOGD(TAG, "Got %d", *(uint8_t *)element->value);
 		break;
 	case array:
 		err = nvs_get_blob(app_config_nvs_hanle, element->short_name, element->value, &element->size);
 		break;
 	case int8:
 		err = nvs_get_u8(app_config_nvs_hanle, element->short_name, element->value);
-		ESP_LOGI(TAG, "Got %d", *(uint8_t *)element->value);
+		ESP_LOGD(TAG, "Got %d", *(uint8_t *)element->value);
 		break;
 	case int16:
 		err = nvs_get_u16(app_config_nvs_hanle, element->short_name, element->value);
-		ESP_LOGI(TAG, "Got %d", *(uint16_t *)element->value);
+		ESP_LOGD(TAG, "Got %d", *(uint16_t *)element->value);
 		break;
 	case int32:
 		err = nvs_get_u32(app_config_nvs_hanle, element->short_name, element->value);
-		ESP_LOGI(TAG, "Got %d", *(uint32_t *)element->value);
+		ESP_LOGD(TAG, "Got %d", *(uint32_t *)element->value);
 		break;
 	default:
 		break;
@@ -56,7 +56,7 @@ esp_err_t app_config_load_topic(app_config_topic_t *topic){
 		esp_err_t err = app_config_load_element(&topic->elements[i]);
 		if(err) {
 			if (err == ESP_ERR_NVS_NOT_FOUND){
-				ESP_LOGE(TAG, "Not found element %s", topic->elements[i].short_name);
+				ESP_LOGW(TAG, "Not found element %s", topic->elements[i].short_name);
 			} else {
 				ESP_LOGE(TAG, "Error while loading element %s (error %d). Aborting.", topic->elements[i].short_name, err);
 				return err;
@@ -184,6 +184,7 @@ esp_err_t app_config_init(){
 	   	return err;
 	};
     // Loading stored configuration
+	ESP_LOGI(TAG, "Loading configuration");
 	err = app_config_load();
 	if (err != ESP_OK) {
 		ESP_LOGE(TAG, "Error loading configuration (err %d)", err);
