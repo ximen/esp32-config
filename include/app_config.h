@@ -14,7 +14,7 @@
 
 #define CONF_NVS_NAMESPACE	CONFIG_APP_CONFIG_NVS_NAMESPACE
 
-enum app_config_element_type{
+enum app_config_element_type_t{
 	boolean,
 	int8,
 	int16,

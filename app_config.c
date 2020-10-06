@@ -10,7 +10,7 @@
 #include "esp_err.h"
 #include "nvs_flash.h"
 #include "string.h"
-#include "config_defs.h"
+//#include "config_defs.h"
 
 #define TAG "APP_CONFIG"
 static nvs_handle_t app_config_nvs_hanle;
@@ -21,7 +21,7 @@ app_config_t *app_config_get(){
 	return &app_conf;
 }
 
-esp_err_t app_config_load_element(app_config_element *element){
+esp_err_t app_config_load_element(app_config_element_t *element){
 	ESP_LOGI(TAG, "Loading element %s with size %d", element->short_name, element->size);
 	esp_err_t err = ESP_OK;
 	switch(element->type){
@@ -50,7 +50,7 @@ esp_err_t app_config_load_element(app_config_element *element){
 	return err;
 }
 
-esp_err_t app_config_load_topic(app_config_topic *topic){
+esp_err_t app_config_load_topic(app_config_topic_t *topic){
 	ESP_LOGI(TAG, "Loading topic %s with %d elements", topic->short_name, topic->elements_number);
 	for (uint8_t i = 0; i < topic->elements_number; i++){
 		esp_err_t err = app_config_load_element(&topic->elements[i]);
@@ -83,7 +83,7 @@ esp_err_t app_config_load(){
 	return ESP_OK;
 }
 
-esp_err_t app_config_save_element(app_config_element *element){
+esp_err_t app_config_save_element(app_config_element_t *element){
 	ESP_LOGI(TAG, "Saving element %s with size %d", element->short_name, element->size);
 	esp_err_t err = ESP_OK;
 	switch(element->type){
@@ -108,7 +108,7 @@ esp_err_t app_config_save_element(app_config_element *element){
 	return err;
 }
 
-esp_err_t app_config_save_topic(app_config_topic *topic){
+esp_err_t app_config_save_topic(app_config_topic_t *topic){
 	for (uint8_t i = 0; i < topic->elements_number; i++){
 		esp_err_t err = app_config_save_element(&topic->elements[i]);
 		if (err){
@@ -131,7 +131,7 @@ esp_err_t app_config_save(){
 	return ESP_OK;
 }
 
-app_config_element *findElement(const char* element){
+app_config_element_t *findElement(const char* element){
 	for (uint8_t i=0; i < app_conf.topics_number; i++){
 		for (uint8_t j=0; j < app_conf.topics[i].elements_number; j++){
 			if (strncmp(element, app_conf.topics[i].elements[j].short_name, strlen(element) + 1) == 0){
@@ -144,7 +144,7 @@ app_config_element *findElement(const char* element){
 
 esp_err_t app_config_getValue(const char* element, uint8_t type, void *value){
 	ESP_LOGI(TAG, "Getting from config: %s", element);
-	app_config_element *elt = findElement(element);
+	app_config_element_t *elt = findElement(element);
 	if(elt != NULL){
 		if(elt->type != type) return ESP_ERR_INVALID_ARG;
 		if(type == boolean) *(bool *)value = *(bool *)elt->value;
