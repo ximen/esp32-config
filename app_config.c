@@ -5,12 +5,12 @@
  *      Author: ximen
  */
 #include "app_config.h"
-
+#include "sdkconfig.h"
 #include "esp_log.h"
 #include "esp_err.h"
 #include "nvs_flash.h"
 #include "string.h"
-//#include "config_defs.h"
+#include "config_defs.h"
 
 #define TAG "APP_CONFIG"
 static nvs_handle_t app_config_nvs_hanle;

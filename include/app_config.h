@@ -51,13 +51,16 @@ typedef struct {
 
 
 #define APP_CONFIG_DEFINE_BOOL(_short, _name)  { _name, #_short, boolean, sizeof(_short), &_short}
+#define APP_CONFIG_DEFINE_INT8(_short, _name)  { _name, #_short, int8, sizeof(_short), &_short}
+#define APP_CONFIG_DEFINE_INT16(_short, _name)  { _name, #_short, int16, sizeof(_short), &_short}
+#define APP_CONFIG_DEFINE_INT32(_short, _name)  { _name, #_short, int32, sizeof(_short), &_short}
 #define APP_CONFIG_DEFINE_ARRAY(_short, _name) { _name, #_short, array, sizeof(_short), _short}
 #define APP_CONFIG_DEFINE_TOPIC(_short, _name, _elements) { _name, #_short, sizeof(_elements)/sizeof(_elements[0]), _elements}
 #define APP_CONFIG_DEFINE_STD_WIFI(_name, _def_ssid, _def_psk) \
 		static bool	std_wifi_ap = true; \
 		static char	std_wifi_ssid[32] = _def_ssid; \
 		static char	std_wifi_psk[64] = _def_psk; \
-		static app_config_element config_std_wifi_elements[] = { \
+		static app_config_element_t config_std_wifi_elements[] = { \
 		APP_CONFIG_DEFINE_BOOL(std_wifi_ap, "Access point"), \
 		APP_CONFIG_DEFINE_ARRAY(std_wifi_ssid, "SSID"), \
 		APP_CONFIG_DEFINE_ARRAY(std_wifi_psk, "PSK") };

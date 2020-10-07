@@ -1,4 +1,11 @@
 config APP_CONFIG_NVS_NAMESPACE
     string "NVS configuration namespace"
+    default "configuration"
     help
         Sets NVS namespace for storing configuration data.
+
+config APP_CONFIG_FILE_NAME
+    string "Configuration filename"
+    default "conf.json"
+    help
+        Filename of JSON file containing configuration declaration.
