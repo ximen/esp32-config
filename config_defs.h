@@ -35,6 +35,7 @@ static app_config_element_t config_protocols_elements[] = {
 #define		APP_CONFIG_STD_BLE_MESH	1
 
 #define		APP_CONFIG_STD_MQTT	1
+APP_CONFIG_DEFINE_STD_MQTT("MQTT", 1883)
 
 static app_config_element_t config_sensors_elements[] = {
 	APP_CONFIG_DEFINE_INT8(sensor1_type, "Sensor 1 type"),
@@ -64,6 +65,7 @@ static app_config_element_t config_zones_elements[] = {
 static app_config_topic_t conf_topics[] = {
 	APP_CONFIG_DEFINE_TOPIC(std_wifi_topic , "WiFi", config_std_wifi_elements),
 	APP_CONFIG_DEFINE_TOPIC(protocols, "Protocols", config_protocols_elements),
+	APP_CONFIG_DEFINE_TOPIC(std_mqtt_topic , "MQTT", config_std_mqtt_elements),
 	APP_CONFIG_DEFINE_TOPIC(sensors, "Sensors", config_sensors_elements),
 	APP_CONFIG_DEFINE_TOPIC(zones, "Zones", config_zones_elements),
 };

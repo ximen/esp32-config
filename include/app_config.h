@@ -64,6 +64,16 @@ typedef struct {
 		APP_CONFIG_DEFINE_BOOL(std_wifi_ap, "Access point"), \
 		APP_CONFIG_DEFINE_ARRAY(std_wifi_ssid, "SSID"), \
 		APP_CONFIG_DEFINE_ARRAY(std_wifi_psk, "PSK") };
+#define APP_CONFIG_DEFINE_STD_MQTT(_name, _def_port) \
+		static char	std_mqtt_broker[64]; \
+		static uint16_t	std_mqtt_port = _def_port; \
+		static char	std_mqtt_user[32]; \
+		static char	std_mqtt_pass[32]; \
+		static app_config_element_t config_std_mqtt_elements[] = { \
+		APP_CONFIG_DEFINE_ARRAY(std_mqtt_broker, "Broker"), \
+		APP_CONFIG_DEFINE_INT16(std_mqtt_port, "Port"), \
+		APP_CONFIG_DEFINE_ARRAY(std_mqtt_user, "Username"), \
+		APP_CONFIG_DEFINE_ARRAY(std_mqtt_pass, "Password") };
 
 
 /**
