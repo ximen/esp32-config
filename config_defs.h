@@ -1,4 +1,6 @@
 #include "app_config.h"
+#include "sdkconfig.h"
+#include <stdbool.h>
 
 static bool	ble_mesh;
 static bool	mqtt;

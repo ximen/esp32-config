@@ -12,7 +12,9 @@ with open(sys.argv[1] + "/" + sys.argv[2], "r") as json_file:
 
 h_file = open(sys.argv[3] + '/config_defs.h', 'w')
 
-h_file.write("#include \"app_config.h\"\n\n")
+h_file.write("#include \"app_config.h\"\n")
+h_file.write("#include \"sdkconfig.h\"\n")
+h_file.write("#include <stdbool.h>\n\n")
 
 #if conf["wifi"] == True:
 #    
@@ -80,8 +82,3 @@ h_file.write("};\n\n")
 
 h_file.write("static app_config_t app_conf = { " + str(conf["version"]) + ", \"" + conf["name"] + "\", \"" + conf["short_name"] + "\", " + str(len(conf["topics"])) + ", conf_topics };")
 print(conf["name"])
-
-#html_header = "\nstatic char* app_config_html = \"<html>\n\t<head></head>\n\t<body>\n"
-#html_footer = "\t</body>\n</html>\";\n"
-
-#h_file.write(html_header)

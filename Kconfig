@@ -9,3 +9,34 @@ config APP_CONFIG_FILE_NAME
     default "conf.json"
     help
         Filename of JSON file containing configuration declaration.
+
+config APP_CONFIG_ELT_NAME_LEN
+    int "Name length"
+    default 32
+    help
+        Maximum element's or topic's name length.
+
+config APP_CONFIG_SHORT_NAME_LEN
+    int "Short name length"
+    default 16
+    help
+        Maximum element's or topic's short name length.
+
+config APP_CONFIG_MQTT_BROKER_LEN
+    int "Broker length"
+    default 32
+    help
+        Maximum MQTT broker's address length.
+
+config APP_CONFIG_MQTT_USER_LEN
+    int "MQTT username length"
+    default 32
+    help
+        Maximum username lenght for MQTT auth.
+
+config APP_CONFIG_MQTT_PASS_LEN
+    int "MQTT password length"
+    default 32
+    help
+    Maximum password lenght for MQTT auth.
+                

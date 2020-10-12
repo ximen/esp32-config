@@ -13,6 +13,8 @@
 #include "sdkconfig.h"
 
 #define CONF_NVS_NAMESPACE	CONFIG_APP_CONFIG_NVS_NAMESPACE
+#define APP_CONFIG_MAX_SSID_LEN	32		// defined by WiFi standard
+#define APP_CONFIG_MAX_PSK_LEN	63
 
 enum app_config_element_type_t{
 	boolean,
@@ -25,28 +27,28 @@ enum app_config_element_type_t{
 
 // Structure defines single configuration property 
 typedef struct {
-	char 							name[32];		// Configuration element's name
-	char 							short_name[16];	// Configuration element's short name
-	enum app_config_element_type_t	type;			// Configuration element's type
-	size_t							size;			// Configuration element's length in bytes
+	char 							name[CONFIG_APP_CONFIG_ELT_NAME_LEN];			// Configuration element's name
+	char 							short_name[CONFIG_APP_CONFIG_SHORT_NAME_LEN];	// Configuration element's short name
+	enum app_config_element_type_t	type;											// Configuration element's type
+	size_t							size;											// Configuration element's length in bytes
 	void							*value;
 } app_config_element_t;
 
 // Structure defines configuration topic collecting elements referring to one subject
 typedef struct {
-	char 				    name[32];			    // Configuration topic's name
-	char 				    short_name[32];		    // Configuration topic's name
-	uint8_t				    elements_number;	    // Number of elements in the topic
-	app_config_element_t	*elements;			    // Pointer to array of configuration elements
+	char 				    name[CONFIG_APP_CONFIG_ELT_NAME_LEN];			    // Configuration topic's name
+	char 				    short_name[CONFIG_APP_CONFIG_SHORT_NAME_LEN];		// Configuration topic's name
+	uint8_t				    elements_number;	    							// Number of elements in the topic
+	app_config_element_t	*elements;			    							// Pointer to array of configuration elements
 } app_config_topic_t;
 
 // Structure defines whole configuration
 typedef struct {
-	uint8_t				version;			        // Configuration structure version
-	char 				name[32];			        // Configuration topic's name
-	char 				short_name[32];		        // Configuration topic's name
-	uint8_t				topics_number;		        // Number of elements in the topic
-	app_config_topic_t	*topics;			        // Pointer to array of configuration elements
+	uint8_t				version;			       			 					// Configuration structure version
+	char 				name[CONFIG_APP_CONFIG_ELT_NAME_LEN];			        // Configuration topic's name
+	char 				short_name[CONFIG_APP_CONFIG_SHORT_NAME_LEN];		    // Configuration topic's name
+	uint8_t				topics_number;		        							// Number of elements in the topic
+	app_config_topic_t	*topics;			        							// Pointer to array of configuration elements
 } app_config_t;
 
 
@@ -58,17 +60,17 @@ typedef struct {
 #define APP_CONFIG_DEFINE_TOPIC(_short, _name, _elements) { _name, #_short, sizeof(_elements)/sizeof(_elements[0]), _elements}
 #define APP_CONFIG_DEFINE_STD_WIFI(_name, _def_ssid, _def_psk) \
 		static bool	std_wifi_ap = true; \
-		static char	std_wifi_ssid[32] = _def_ssid; \
-		static char	std_wifi_psk[64] = _def_psk; \
+		static char	std_wifi_ssid[APP_CONFIG_MAX_SSID_LEN] = _def_ssid; \
+		static char	std_wifi_psk[APP_CONFIG_MAX_SSID_LEN] = _def_psk; \
 		static app_config_element_t config_std_wifi_elements[] = { \
 		APP_CONFIG_DEFINE_BOOL(std_wifi_ap, "Access point"), \
 		APP_CONFIG_DEFINE_ARRAY(std_wifi_ssid, "SSID"), \
 		APP_CONFIG_DEFINE_ARRAY(std_wifi_psk, "PSK") };
 #define APP_CONFIG_DEFINE_STD_MQTT(_name, _def_port) \
-		static char	std_mqtt_broker[64]; \
+		static char	std_mqtt_broker[CONFIG_APP_CONFIG_MQTT_BROKER_LEN]; \
 		static uint16_t	std_mqtt_port = _def_port; \
-		static char	std_mqtt_user[32]; \
-		static char	std_mqtt_pass[32]; \
+		static char	std_mqtt_user[CONFIG_APP_CONFIG_MQTT_USER_LEN]; \
+		static char	std_mqtt_pass[CONFIG_APP_CONFIG_MQTT_PASS_LEN]; \
 		static app_config_element_t config_std_mqtt_elements[] = { \
 		APP_CONFIG_DEFINE_ARRAY(std_mqtt_broker, "Broker"), \
 		APP_CONFIG_DEFINE_INT16(std_mqtt_port, "Port"), \
