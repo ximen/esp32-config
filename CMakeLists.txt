@@ -1,4 +1,4 @@
-idf_component_register(SRCS "app_config.c"
+idf_component_register(SRCS "app_config.c" "app_config_wifi.c"
                        INCLUDE_DIRS "include"
                        REQUIRES nvs_flash)
 
