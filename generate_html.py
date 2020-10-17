@@ -7,17 +7,21 @@ from jsmin import jsmin
 from cssmin import cssmin
 import htmlmin
 import string
+from configparser import ConfigParser
 
-json_filename = sys.argv[1] + "/" + sys.argv[2]                     # Configurations JSON file
-css_filename = sys.argv[1] + "/" + sys.argv[3]                      # User CSS file
-default_css_filename = sys.argv[4] + "/" + 'config_default.css'     # Default CSS file
-html_filename = sys.argv[1] + "/" + 'config.html'                   # Output HTML file
-h_filename = sys.argv[4] + "/" + 'config_html.h'                   # Output HTML file
+sdkconfig = ConfigParser()
+with open(sys.argv[1] + "/sdkconfig") as stream:
+    sdkconfig.read_string("[sdk]\n" + stream.read())
 
-try:
-    sys.argv[5] == "y"
+json_filename = sys.argv[1] + "/" + sdkconfig['sdk']['CONFIG_APP_CONFIG_FILE_NAME'].strip('"')  # Configurations JSON file
+css_filename = sys.argv[1] + "/" + sdkconfig['sdk']['CONFIG_APP_CONFIG_CSS_FILE'].strip('"')    # User CSS file
+default_css_filename = sys.argv[2] + "/" + 'config_default.css'                                 # Default CSS file
+html_filename = sys.argv[1] + "/" + 'config.html'                                               # Output HTML file
+h_filename = sys.argv[2] + "/" + 'config_html.h'                                                # Output HTML include file
+
+if sdkconfig['sdk']['CONFIG_APP_CONFIG_MINIMIZE_HTML'] == "y":
     minimize = True
-except IndexError:
+else:
     minimize = False
 
 def xxd():

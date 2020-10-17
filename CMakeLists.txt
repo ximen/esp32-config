@@ -7,7 +7,7 @@ if(NOT CMAKE_BUILD_EARLY_EXPANSION)
 add_custom_target(config_defs 
      COMMAND python ${COMPONENT_DIR}/generate_config.py ${PROJECT_DIR} ${CONFIG_APP_CONFIG_FILE_NAME} ${COMPONENT_DIR})
 add_custom_target(config_html 
-     COMMAND python ${COMPONENT_DIR}/generate_html.py ${PROJECT_DIR} ${CONFIG_APP_CONFIG_FILE_NAME} ${CONFIG_APP_CONFIG_CSS_FILE} ${COMPONENT_DIR} ${CONFIG_APP_CONFIG_MINIMIZE_HTML})
+     COMMAND python ${COMPONENT_DIR}/generate_html.py ${PROJECT_DIR} ${COMPONENT_DIR})
 
 add_dependencies(${COMPONENT_LIB} config_defs config_html)
 
