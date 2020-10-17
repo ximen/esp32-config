@@ -38,5 +38,10 @@ config APP_CONFIG_MQTT_PASS_LEN
     int "MQTT password length"
     default 32
     help
-    Maximum password lenght for MQTT auth.
-                
+        Maximum password lenght for MQTT auth.
+
+config APP_CONFIG_CSS_FILE
+    string "CSS filename"
+    default "main.css"
+    help
+        Filename of CSS file for configuration page.    
