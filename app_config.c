@@ -11,6 +11,7 @@
 #include "nvs_flash.h"
 #include "string.h"
 #include "config_defs.h"
+#include "cJSON.h"
 
 #define TAG "APP_CONFIG"
 static nvs_handle_t app_config_nvs_hanle;
@@ -118,6 +119,7 @@ esp_err_t app_config_save_topic(app_config_topic_t *topic){
 	}
 	return ESP_OK;
 }
+
 esp_err_t app_config_save(){
 	esp_err_t err;
 	for (uint8_t i = 0; i < app_conf.topics_number; i++){
@@ -190,4 +192,97 @@ esp_err_t app_config_init(){
 		ESP_LOGE(TAG, "Error loading configuration (err %d)", err);
 	}
 	return ESP_OK;
+}
+
+char *app_config_toJSON(){
+	cJSON *json_conf = cJSON_CreateObject();
+
+	if (cJSON_AddStringToObject(json_conf, "short_name", app_conf.short_name) == NULL){
+       	cJSON_Delete(json_conf);
+		return NULL;
+    }
+	if (cJSON_AddNumberToObject(json_conf, "version", app_conf.version) == NULL){
+       	cJSON_Delete(json_conf);
+		return NULL;
+    }
+	
+	cJSON *topics = NULL;
+	topics = cJSON_AddArrayToObject(json_conf, "topics");
+	if (topics == NULL){
+   	   	cJSON_Delete(json_conf);
+		return NULL;
+   	}
+	for (uint8_t i=0; i < app_conf.topics_number; i++){
+		cJSON *topic = cJSON_CreateObject();
+		if (cJSON_AddStringToObject(topic, "short_name", app_conf.topics[i].short_name) == NULL){
+	   	   	cJSON_Delete(json_conf);
+			return NULL;
+        }
+		cJSON *elements = NULL;
+		elements = cJSON_AddArrayToObject(topic, "elements");
+		if (elements == NULL){
+   	   		cJSON_Delete(json_conf);
+			return NULL;
+   		}
+		for (uint8_t j=0; j < app_conf.topics[i].elements_number; j++){
+			cJSON *element = cJSON_CreateObject();
+			if (cJSON_AddStringToObject(element, "short_name", app_conf.topics[i].elements[j].short_name) == NULL){
+	   	   		cJSON_Delete(json_conf);
+				return NULL;
+        	}
+			switch (app_conf.topics[i].elements[j].type){
+				case boolean:
+
+					if (cJSON_AddBoolToObject(element, "value", *(bool *)app_conf.topics[i].elements[j].value) == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
+				break;
+				case int8:
+					if (cJSON_AddNumberToObject(element, "value", *(uint8_t*)app_conf.topics[i].elements[j].value) == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
+				break;
+				case int16:
+					if (cJSON_AddNumberToObject(element, "value", *(uint16_t *)app_conf.topics[i].elements[j].value) == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
+				break;
+				case int32:
+					if (cJSON_AddNumberToObject(element, "value", *(uint32_t *)app_conf.topics[i].elements[j].value) == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
+				break;
+				case array:
+					if (cJSON_AddStringToObject(element, "value", (char *)app_conf.topics[i].elements[j].value) == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
+				break;
+				default:
+					ESP_LOGE(TAG, "Unknown value type");
+   			   		cJSON_Delete(json_conf);
+					return NULL;
+				break;
+			};
+			if (cJSON_AddStringToObject(element, "value", app_conf.topics[i].elements[j].short_name) == NULL){
+	   	   		cJSON_Delete(json_conf);
+				return NULL;
+        	}
+			cJSON_AddItemToArray(elements, element);
+		}
+		cJSON_AddItemToArray(topics, topic);
+	}
+
+	char *json_string;
+	json_string = cJSON_Print(json_conf);
+    if (json_string == NULL)    {
+        ESP_LOGE(TAG, "Error generating JSON");
+    }
+	cJSON_Delete(json_conf);
+	return json_string;
+
 }

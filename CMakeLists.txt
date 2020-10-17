@@ -1,6 +1,6 @@
 idf_component_register(SRCS "app_config.c" "app_config_wifi.c" "app_config_http.c"
                        INCLUDE_DIRS "include"
-                       REQUIRES nvs_flash esp_http_server)
+                       REQUIRES nvs_flash esp_http_server json)
 
 if(NOT CMAKE_BUILD_EARLY_EXPANSION) 
 

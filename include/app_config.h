@@ -76,6 +76,8 @@ typedef struct {
 		APP_CONFIG_DEFINE_INT16(std_mqtt_port, "Port"), \
 		APP_CONFIG_DEFINE_ARRAY(std_mqtt_user, "Username"), \
 		APP_CONFIG_DEFINE_ARRAY(std_mqtt_pass, "Password") };
+#define APP_CONFIG_DEFINE_STD_BLE_MESH(_name) \
+		static app_config_element_t config_std_ble_mesh_elements[] = { };
 
 
 /**
@@ -86,7 +88,7 @@ typedef struct {
  * 2. Open NVS storage
  * 3. Load stored configuration in global static variable app_conf
  *
-  * @return
+ * @return
  *             - ESP_OK if configuration was initialized successfully
  *             - one of the error codes from the underlying flash storage driver
  */
@@ -112,7 +114,10 @@ app_config_t *app_config_get();
  * @param[in]   element  Name (label) of the required element
  * @param[out]  value    Pointer to boolean variable for returning value
  *
- */
+ * @return
+ *             - ESP_OK if configuration was initialized successfully
+ *             - one of the error codes in other case
+*/
 esp_err_t app_config_getBool(const char* element, bool *value);
 
 /**
@@ -123,7 +128,22 @@ esp_err_t app_config_getBool(const char* element, bool *value);
  * @param[in]   element  Name (label) of the required element
  * @param[out]  value    Pointer to char* variable for returning value
  *
- */
+ * @return
+ *             - ESP_OK if configuration was initialized successfully
+ *             - one of the error codes in other case
+*/
 esp_err_t app_config_getArray(const char* element, char **value);
+
+/**
+ * @brief      Returns JSON representation of configuration
+ *
+ * Returns pointer to  string containing JSON representation of current configuration.
+ * Memory for string allocated dynamically so free() should be called to avoid memory leak.
+ *
+ * @return
+ *             - Pointer to resulting string
+ *             - NULL in case of error
+ */
+char *app_config_toJSON();
 
 #endif /* APP_CONFIG_H_ */

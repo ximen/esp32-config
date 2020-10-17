@@ -18,7 +18,7 @@ config APP_CONFIG_ELT_NAME_LEN
 
 config APP_CONFIG_SHORT_NAME_LEN
     int "Short name length"
-    default 16
+    default 32
     help
         Maximum element's or topic's short name length.
 
@@ -45,3 +45,21 @@ config APP_CONFIG_CSS_FILE
     default "main.css"
     help
         Filename of CSS file for configuration page.    
+
+config APP_CONFIG_REST_PATH
+    string "Path for REST config"
+    default "/config"
+    help
+        HTTP path for JSON config.
+
+config APP_CONFIG_HTML_GET_PATH
+    string "Configuration page path"
+    default "/"
+    help
+        HTTP path for configuration HTML page.
+
+config APP_CONFIG_HTML_SET_PATH
+    string "Configuration set path"
+    default "/set"
+    help
+        HTTP path for setting configuration data

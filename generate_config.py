@@ -50,7 +50,7 @@ for topic in conf["topics"]:
         h_file.write("APP_CONFIG_DEFINE_STD_MQTT(\"" + topic["name"] + "\", 1883)\n")
     elif topic.get("std_ble_mesh") == True:
         h_file.write("\n#define\t\tAPP_CONFIG_STD_BLE_MESH\t1\n")
-        #h_file.write("APP_CONFIG_DEFINE_STD_WIFI(\"" + topic["name"] + "\", \"" + topic["default_ssid"] + "\", \"" + topic["default_psk"] + "\")\n")
+        h_file.write("APP_CONFIG_DEFINE_STD_BLE_MESH(\"" + topic["name"] + "\")\n")
     else:
         h_file.write("\nstatic app_config_element_t config_" + topic["short_name"] + "_elements[] = {\n")
         for elt in topic["elements"]:
@@ -72,10 +72,8 @@ for topic in conf["topics"]:
         h_file.write("\tAPP_CONFIG_DEFINE_TOPIC(std_wifi_topic , \"" + topic["name"] + "\", config_std_wifi_elements),\n")
     elif topic.get("std_mqtt") == True:
         h_file.write("\tAPP_CONFIG_DEFINE_TOPIC(std_mqtt_topic , \"" + topic["name"] + "\", config_std_mqtt_elements),\n")
-    elif topic.get("std_mqtt") == True:
-        print("TODO: MQTT topic")
     elif topic.get("std_ble_mesh") == True:
-        print("TODO: Mesh topic")
+        h_file.write("\tAPP_CONFIG_DEFINE_TOPIC(std_ble_mesh_topic , \"" + topic["name"] + "\", config_std_ble_mesh_elements),\n")
     else:
         h_file.write("\tAPP_CONFIG_DEFINE_TOPIC(" + topic["short_name"] + ", \"" + topic["name"] + "\", config_" + topic["short_name"] + "_elements),\n")
 h_file.write("};\n\n")
