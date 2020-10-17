@@ -63,3 +63,10 @@ config APP_CONFIG_HTML_SET_PATH
     default "/set"
     help
         HTTP path for setting configuration data
+
+config APP_CONFIG_MINIMIZE_HTML
+    bool "Minimize HTML"
+    default y
+    help
+        Try to create more compact HTML.
+        

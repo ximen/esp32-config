@@ -3,11 +3,42 @@
 import sys
 import json
 import os.path
+from jsmin import jsmin
+from cssmin import cssmin
+import htmlmin
+import string
 
 json_filename = sys.argv[1] + "/" + sys.argv[2]                     # Configurations JSON file
 css_filename = sys.argv[1] + "/" + sys.argv[3]                      # User CSS file
 default_css_filename = sys.argv[4] + "/" + 'config_default.css'     # Default CSS file
 html_filename = sys.argv[1] + "/" + 'config.html'                   # Output HTML file
+h_filename = sys.argv[4] + "/" + 'config_html.h'                   # Output HTML file
+
+if sys.argv[5] == "y":
+    minimize = True
+else:
+    minimize = False
+
+def xxd():
+    with open(html_filename, 'r') as f:
+        output = "unsigned char app_config_html[] = {"
+        length = 0
+        while True:
+            buf = f.read(12)
+
+            if not buf:
+                output = output[:-2]
+                break
+            else:
+                output += "\n  "
+
+            for i in buf:
+                output += "0x%02x, " % ord(i)
+                length += 1
+        output += "\n};\n"
+        output += "unsigned int app_config_html_len = %d;" % length
+        return output
+
 
 # Determines if topic is standard
 def isStdTopic(topic):
@@ -34,7 +65,7 @@ def get_short_name(topic):
 with open(json_filename, "r") as json_file:
     conf = json.load(json_file)
 
-h_file = open(html_filename, 'w')
+html_file = open(html_filename, 'w')
 
 if not os.path.exists(css_filename):
     css_filename = default_css_filename
@@ -83,24 +114,25 @@ attach_script = '''for (const [key, value] of Object.entries(dependencies)) {
     elt.onclick();
 }
 '''
-
+if minimize:
+    css = cssmin(css)
 # Write standard HTML header
-h_file.write('<html>\n\t<head>\n\t\t<meta charset=\"utf-8\">\n\t\t<title>{}</title>\n\t\t<style>{}\n\t\t</style>\n\t</head>\n\t<body style="width: 90%; max-width: 1024px;margin-right: auto;margin-left: auto;background-color:#E6E6FA">\n'.format(conf["name"], css))
-h_file.write('\t\t<h1>{}</h1>\n'.format(conf["name"]))
+html = '<html>\n\t<head>\n\t\t<meta charset="utf-8">\n\t\t<title>{}</title>\n\t\t<style>{}\n\t\t</style>\n\t</head>\n\t<body style="width: 90%; max-width: 1024px;margin-right: auto;margin-left: auto;background-color:#E6E6FA">\n'.format(conf["name"], css)
+html += '\t\t<h1>{}</h1>\n'.format(conf["name"])
 
-h_file.write('<form action="/set" method="get">\n')
+html += '<form action="/set" method="get">\n'
 # Generate tabs with topics
 # Tabs
 counter = 0
-h_file.write('\t\t<div class=\"tab\">\n')
+html += '\t\t<div class=\"tab\">\n'
 for topic in conf["topics"]:
     if counter == 0:
         default_open = 'id=\"defaultOpen\"'
     else: 
         default_open = ''
-    h_file.write('\t\t\t<button type="button" class=\"tablinks\" name={2} onclick=\"openTab(event, \'{0}\')\" {1}>{0}</button>\n'.format(topic["name"], default_open, get_short_name(topic)))
+    html += '\t\t\t<button type="button" class=\"tablinks\" name={2} onclick=\"openTab(event, \'{0}\')\" {1}>{0}</button>\n'.format(topic["name"], default_open, get_short_name(topic))
     counter += 1
-h_file.write('\t\t</div>\n')
+html += '\t\t</div>\n'
 
 # Fill dependencies
 for topic in conf["topics"]:
@@ -114,72 +146,77 @@ deps_script += "}\n"
 
 # Elements inside tabs
 for topic in conf["topics"]:
-    h_file.write('\t\t<div id=\"{}\" class=\"tabcontent\">\n'.format(topic["name"]))
+    html += '\t\t<div id=\"{}\" class=\"tabcontent\">\n'.format(topic["name"])
     if not isStdTopic(topic):
-        h_file.write('<fieldset class="table">\n')
+        html += '<fieldset class="table">\n'
         for elt in topic["elements"]:
-            h_file.write('<div class="tr">\n')
-            h_file.write('\t\t\t<div class="td right">{0}</div>\n'.format(elt["name"]))
+            html += '<div class="tr">\n'
+            html += '\t\t\t<div class="td right">{0}</div>\n'.format(elt["name"])
             if elt["type"] == "boolean":
-                h_file.write('\t\t\t<div class="td"><input type="checkbox" name="{0}" value="**{0}"></div>\n'.format(elt["short_name"]))
+                html += '\t\t\t<div class="td"><input type="checkbox" name="{0}" value="**{0}"></div>\n'.format(elt["short_name"])
             if elt["type"] == "array":
-                h_file.write('\t\t\t<div class="td"><input type="text" maxlength="{0}" name="{1}"></div>\n'.format(elt["size"], elt["short_name"]))
+                html += '\t\t\t<div class="td"><input type="text" maxlength="{0}" name="{1}"></div>\n'.format(elt["size"], elt["short_name"])
             if elt["type"] == "int8":
-                h_file.write('\t\t\t<div class="td"><input type="number" max="255" name="{0}"></div>\n'.format(elt["short_name"]))
+                html += '\t\t\t<div class="td"><input type="number" max="255" name="{0}"></div>\n'.format(elt["short_name"])
             if elt["type"] == "int16":
-                h_file.write('\t\t\t<div class="td"><input type="number" max="65535" name="{0}"></div>\n'.format(elt["short_name"]))
+                html += '\t\t\t<div class="td"><input type="number" max="65535" name="{0}"></div>\n'.format(elt["short_name"])
             if elt["type"] == "int32":
-                h_file.write('\t\t\t<div class="td"><input type="number" name="{0}"></div>\n'.format(elt["short_name"]))
-            h_file.write('</div>\n')
-        h_file.write('</fieldset>\n')
+                html += '\t\t\t<div class="td"><input type="number" name="{0}"></div>\n'.format(elt["short_name"])
+            html += '</div>\n'
+        html += '</fieldset>\n'
     else:
         if topic.get("std_wifi") == True:
             # Standard WiFi fields
-            h_file.write('<fieldset class="table"><legend>Wi-Fi settings <abbr title="This field is mandatory">*</abbr></legend>\n')
-            h_file.write('<div class="tr">\n')
-            h_file.write('\t\t\t<div class="td right">Access point</div>\n')
-            h_file.write('\t\t\t<div class="td"><input type="checkbox" name="std_wifi_ap" value="**std_wifi_ap"></div>\n')
-            h_file.write('</div>\n')
-            h_file.write('<div class="tr">\n')
-            h_file.write('\t\t\t<div class="td right">SSID</div>\n')
-            h_file.write('\t\t\t<div class="td"><input type="text" maxlength="32" name="std_wifi_ssid" required></div>\n')
-            h_file.write('</div>\n')
-            h_file.write('<div class="tr">\n')
-            h_file.write('\t\t\t<div class="td right">PSK</div>\n')
-            h_file.write('\t\t\t<div class="td"><input type="password" maxlength="64" name="std_wifi_psk" required></div>\n')
-            h_file.write('</div>\n')
-            h_file.write('</fieldset>\n')
+            html += '<fieldset class="table"><legend>Wi-Fi settings <abbr title="This field is mandatory">*</abbr></legend>\n'
+            html += '<div class="tr">\n'
+            html += '\t\t\t<div class="td right">Access point</div>\n'
+            html += '\t\t\t<div class="td"><input type="checkbox" name="std_wifi_ap" value="**std_wifi_ap"></div>\n'
+            html += '</div>\n'
+            html += '<div class="tr">\n'
+            html += '\t\t\t<div class="td right">SSID</div>\n'
+            html += '\t\t\t<div class="td"><input type="text" maxlength="32" name="std_wifi_ssid" required></div>\n'
+            html += '</div>\n'
+            html += '<div class="tr">\n'
+            html += '\t\t\t<div class="td right">PSK</div>\n'
+            html += '\t\t\t<div class="td"><input type="password" maxlength="64" name="std_wifi_psk" required></div>\n'
+            html += '</div>\n'
+            html += '</fieldset>\n'
         elif topic.get("std_mqtt") == True:
-            h_file.write('<fieldset class="table"><legend>MQTT <abbr title="This field is mandatory">*</abbr></legend>\n')
-            h_file.write('<div class="tr">\n')
-            h_file.write('\t\t\t<div class="td right">Broker</div>\n')
-            h_file.write('\t\t\t<div class="td"><input type="text" name="std_mqtt_broker" required></div>\n')
-            h_file.write('</div>\n')
-            h_file.write('<div class="tr">\n')
-            h_file.write('\t\t\t<div class="td right">Port</div>\n')
-            h_file.write('\t\t\t<div class="td"><input type="number" name="std_mqtt_port"></div>\n')
-            h_file.write('</div>\n')
-            h_file.write('<div class="tr">\n')
-            h_file.write('\t\t\t<div class="td right">Username</div>\n')
-            h_file.write('\t\t\t<div class="td"><input type="text" name="std_mqtt_user"></div>\n')
-            h_file.write('</div>\n')
-            h_file.write('<div class="tr">\n')
-            h_file.write('\t\t\t<div class="td right">Password</div>\n')
-            h_file.write('\t\t\t<div class="td"><input type="text" name="std_mqtt_pass"></div>\n')
-            h_file.write('</div>\n')
-            h_file.write('</fieldset>\n')
+            html += '<fieldset class="table"><legend>MQTT <abbr title="This field is mandatory">*</abbr></legend>\n'
+            html += '<div class="tr">\n'
+            html += '\t\t\t<div class="td right">Broker</div>\n'
+            html += '\t\t\t<div class="td"><input type="text" name="std_mqtt_broker" required></div>\n'
+            html += '</div>\n'
+            html += '<div class="tr">\n'
+            html += '\t\t\t<div class="td right">Port</div>\n'
+            html += '\t\t\t<div class="td"><input type="number" name="std_mqtt_port"></div>\n'
+            html += '</div>\n'
+            html += '<div class="tr">\n'
+            html += '\t\t\t<div class="td right">Username</div>\n'
+            html += '\t\t\t<div class="td"><input type="text" name="std_mqtt_user"></div>\n'
+            html += '</div>\n'
+            html += '<div class="tr">\n'
+            html += '\t\t\t<div class="td right">Password</div>\n'
+            html += '\t\t\t<div class="td"><input type="text" name="std_mqtt_pass"></div>\n'
+            html += '</div>\n'
+            html += '</fieldset>\n'
         elif topic.get("std_ble_mesh") == True:
-            h_file.write('<fieldset class="table"><legend>Bluetooth Mesh settings<abbr title="This field is mandatory">*</abbr></legend>\n')
-            h_file.write('</fieldset>\n')
+            html += '<fieldset class="table"><legend>Bluetooth Mesh settings<abbr title="This field is mandatory">*</abbr></legend>\n'
+            html += '</fieldset>\n'
         else:
-            h_file.write('<fieldset class="table">\n')
-            h_file.write('</fieldset>\n')
-    h_file.write('\t\t</div>\n')
+            html += '<fieldset class="table">\n'
+            html += '</fieldset>\n'
+    html += '\t\t</div>\n'
 
-h_file.write('<p align="right"><input type="submit" value="Submit"></p>\n</form>\n')
+html += '<p align="right"><input type="submit" value="Submit"></p>\n</form>\n'
+if minimize:
+    html = htmlmin.minify(html, remove_comments=True, reduce_boolean_attributes=True)
+    js = jsmin(tabs_script) + jsmin(deps_script) + jsmin(attach_script)
 # Script
-h_file.write('\t\t<script>\n{0}{1}{2}\n\t\t\n</script>'.format(tabs_script, deps_script, attach_script))
+html += '\t\t<script>\n{}\n\t\t\n</script>'.format(js)
 # Write footer
-h_file.write('\t</body>\n</html>')
-
-print(conf["name"])
+html += '\t</body>\n</html>'
+html_file.write(html)
+html_file.close()
+h_file = open(h_filename, 'w')
+h_file.write(xxd())
