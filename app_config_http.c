@@ -9,6 +9,7 @@
 #include "esp_err.h"
 #include "app_config.h"
 #include "sdkconfig.h"
+#include "config_html.h"
 #include <esp_http_server.h>
 
 #define TAG "APP_CONFIG_HTTP"
@@ -28,7 +29,7 @@ esp_err_t get_conf_handler(httpd_req_t *req){
 }
 
 esp_err_t get_html_handler(httpd_req_t *req){
-    httpd_resp_send_404(req);
+    httpd_resp_send(req, app_config_html, HTTPD_RESP_USE_STRLEN);
 	return ESP_OK;
 }
 

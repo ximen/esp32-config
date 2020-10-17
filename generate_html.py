@@ -14,14 +14,15 @@ default_css_filename = sys.argv[4] + "/" + 'config_default.css'     # Default CS
 html_filename = sys.argv[1] + "/" + 'config.html'                   # Output HTML file
 h_filename = sys.argv[4] + "/" + 'config_html.h'                   # Output HTML file
 
-if sys.argv[5] == "y":
+try:
+    sys.argv[5] == "y"
     minimize = True
-else:
+except IndexError:
     minimize = False
 
 def xxd():
     with open(html_filename, 'r') as f:
-        output = "unsigned char app_config_html[] = {"
+        output = "char app_config_html[] = {"
         length = 0
         while True:
             buf = f.read(12)
@@ -211,7 +212,9 @@ for topic in conf["topics"]:
 html += '<p align="right"><input type="submit" value="Submit"></p>\n</form>\n'
 if minimize:
     html = htmlmin.minify(html, remove_comments=True, reduce_boolean_attributes=True)
-    js = jsmin(tabs_script) + jsmin(deps_script) + jsmin(attach_script)
+    js = jsmin(tabs_script + deps_script + attach_script)
+else:
+    js = tabs_script + deps_script + attach_script
 # Script
 html += '\t\t<script>\n{}\n\t\t\n</script>'.format(js)
 # Write footer
