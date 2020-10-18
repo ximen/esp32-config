@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include "esp_err.h"
+#include "esp_log.h"
 #include "app_config.h"
 #include "sdkconfig.h"
 #include "config_html.h"
@@ -34,6 +35,8 @@ esp_err_t get_html_handler(httpd_req_t *req){
 }
 
 esp_err_t post_conf_handler(httpd_req_t *req){
+    ESP_LOGI(TAG, "Post handler triggered");
+    httpd_resp_send_500(req);    
 	return ESP_OK;
 }
 

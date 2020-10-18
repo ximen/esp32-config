@@ -197,7 +197,7 @@ esp_err_t app_config_init(){
 char *app_config_toJSON(){
 	cJSON *json_conf = cJSON_CreateObject();
 
-	if (cJSON_AddStringToObject(json_conf, "short_name", app_conf.short_name) == NULL){
+	if (cJSON_AddStringToObject(json_conf, "name", app_conf.name) == NULL){
        	cJSON_Delete(json_conf);
 		return NULL;
     }
@@ -218,6 +218,10 @@ char *app_config_toJSON(){
 	   	   	cJSON_Delete(json_conf);
 			return NULL;
         }
+		if (cJSON_AddStringToObject(topic, "name", app_conf.topics[i].name) == NULL){
+	   	   	cJSON_Delete(json_conf);
+			return NULL;
+        }
 		cJSON *elements = NULL;
 		elements = cJSON_AddArrayToObject(topic, "elements");
 		if (elements == NULL){
@@ -230,33 +234,56 @@ char *app_config_toJSON(){
 	   	   		cJSON_Delete(json_conf);
 				return NULL;
         	}
+			if (cJSON_AddStringToObject(element, "name", app_conf.topics[i].elements[j].name) == NULL){
+	   	   		cJSON_Delete(json_conf);
+				return NULL;
+        	}
 			switch (app_conf.topics[i].elements[j].type){
 				case boolean:
-
+					if (cJSON_AddStringToObject(element, "type", "bool") == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
 					if (cJSON_AddBoolToObject(element, "value", *(bool *)app_conf.topics[i].elements[j].value) == NULL){
 	   			   		cJSON_Delete(json_conf);
 						return NULL;
         			}
 				break;
 				case int8:
+					if (cJSON_AddStringToObject(element, "type", "int") == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
 					if (cJSON_AddNumberToObject(element, "value", *(uint8_t*)app_conf.topics[i].elements[j].value) == NULL){
 	   			   		cJSON_Delete(json_conf);
 						return NULL;
         			}
 				break;
 				case int16:
+					if (cJSON_AddStringToObject(element, "type", "int") == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
 					if (cJSON_AddNumberToObject(element, "value", *(uint16_t *)app_conf.topics[i].elements[j].value) == NULL){
 	   			   		cJSON_Delete(json_conf);
 						return NULL;
         			}
 				break;
 				case int32:
+					if (cJSON_AddStringToObject(element, "type", "int") == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
 					if (cJSON_AddNumberToObject(element, "value", *(uint32_t *)app_conf.topics[i].elements[j].value) == NULL){
 	   			   		cJSON_Delete(json_conf);
 						return NULL;
         			}
 				break;
 				case array:
+					if (cJSON_AddStringToObject(element, "type", "array") == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
 					if (cJSON_AddStringToObject(element, "value", (char *)app_conf.topics[i].elements[j].value) == NULL){
 	   			   		cJSON_Delete(json_conf);
 						return NULL;
@@ -268,10 +295,6 @@ char *app_config_toJSON(){
 					return NULL;
 				break;
 			};
-			if (cJSON_AddStringToObject(element, "value", app_conf.topics[i].elements[j].short_name) == NULL){
-	   	   		cJSON_Delete(json_conf);
-				return NULL;
-        	}
 			cJSON_AddItemToArray(elements, element);
 		}
 		cJSON_AddItemToArray(topics, topic);

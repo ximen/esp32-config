@@ -78,7 +78,7 @@ if not os.path.exists(css_filename):
 with open(css_filename, 'r') as css_file:
     css = css_file.read()
 
-# JS script
+# JS script for tabs
 tabs_script = '''function openTab(evt, cityName) {
   var i, tabcontent, tablinks;
 
@@ -101,6 +101,7 @@ document.getElementById("defaultOpen").click();
 '''
 deps_script = '''var dependencies={
 '''
+
 attach_script = '''for (const [key, value] of Object.entries(dependencies)) {
     var elt = document.getElementsByName(value)[0];
     elt.onclick = function(){
@@ -119,6 +120,27 @@ attach_script = '''for (const [key, value] of Object.entries(dependencies)) {
     elt.onclick();
 }
 '''
+action_script = '''
+function fillValues(config){{
+    for (topic of config.topics){{
+        for (elt of topic.elements){{
+            input = document.getElementsByName(elt.short_name)[0]
+            if (elt.type == "bool"){{
+                input.checked = elt.value;
+                elt.onclick;
+            }} else if (elt.type == "int") {{
+                input.value = elt.value;
+            }} else if (elt.type == "array") {{
+                input.value = elt.value;
+            }}
+        }}
+    }}
+}}
+var url = window.location.protocol + "//" + window.location.hostname + {}
+fetch(url)
+  .then(response => response.json())
+  .then(json => fillValues(json));
+'''.format(sdkconfig['sdk']['CONFIG_APP_CONFIG_REST_PATH'])
 
 if minimize:
     css = cssmin(css)
@@ -126,7 +148,7 @@ if minimize:
 html = '<html>\n\t<head>\n\t\t<meta charset="utf-8">\n\t\t<title>{}</title>\n\t\t<style>{}\n\t\t</style>\n\t</head>\n\t<body style="width: 90%; max-width: 1024px;margin-right: auto;margin-left: auto;background-color:#E6E6FA">\n'.format(conf["name"], css)
 html += '\t\t<h1>{}</h1>\n'.format(conf["name"])
 
-html += '<form action="{}" method="get">\n'.format(sdkconfig['sdk']['CONFIG_APP_CONFIG_HTML_SET_PATH'].strip('"'))
+html += '<form action="{}" method="post">\n'.format(sdkconfig['sdk']['CONFIG_APP_CONFIG_HTML_SET_PATH'].strip('"'))
 # Generate tabs with topics
 # Tabs
 counter = 0
@@ -159,7 +181,7 @@ for topic in conf["topics"]:
             html += '<div class="tr">\n'
             html += '\t\t\t<div class="td right">{0}</div>\n'.format(elt["name"])
             if elt["type"] == "boolean":
-                html += '\t\t\t<div class="td"><input type="checkbox" name="{0}" value="**{0}"></div>\n'.format(elt["short_name"])
+                html += '\t\t\t<div class="td"><input type="checkbox" name="{0}"></div>\n'.format(elt["short_name"])
             if elt["type"] == "array":
                 html += '\t\t\t<div class="td"><input type="text" maxlength="{0}" name="{1}"></div>\n'.format(elt["size"], elt["short_name"])
             if elt["type"] == "int8":
@@ -176,22 +198,22 @@ for topic in conf["topics"]:
             html += '<fieldset class="table"><legend>Wi-Fi settings <abbr title="This field is mandatory">*</abbr></legend>\n'
             html += '<div class="tr">\n'
             html += '\t\t\t<div class="td right">Access point</div>\n'
-            html += '\t\t\t<div class="td"><input type="checkbox" name="std_wifi_ap" value="**std_wifi_ap"></div>\n'
+            html += '\t\t\t<div class="td"><input type="checkbox" name="std_wifi_ap"></div>\n'
             html += '</div>\n'
             html += '<div class="tr">\n'
             html += '\t\t\t<div class="td right">SSID</div>\n'
-            html += '\t\t\t<div class="td"><input type="text" maxlength="32" name="std_wifi_ssid" required></div>\n'
+            html += '\t\t\t<div class="td"><input type="text" maxlength="32" name="std_wifi_ssid"></div>\n'
             html += '</div>\n'
             html += '<div class="tr">\n'
             html += '\t\t\t<div class="td right">PSK</div>\n'
-            html += '\t\t\t<div class="td"><input type="password" maxlength="64" name="std_wifi_psk" required></div>\n'
+            html += '\t\t\t<div class="td"><input type="password" maxlength="64" name="std_wifi_psk"></div>\n'
             html += '</div>\n'
             html += '</fieldset>\n'
         elif topic.get("std_mqtt") == True:
             html += '<fieldset class="table"><legend>MQTT <abbr title="This field is mandatory">*</abbr></legend>\n'
             html += '<div class="tr">\n'
             html += '\t\t\t<div class="td right">Broker</div>\n'
-            html += '\t\t\t<div class="td"><input type="text" name="std_mqtt_broker" required></div>\n'
+            html += '\t\t\t<div class="td"><input type="text" name="std_mqtt_broker"></div>\n'
             html += '</div>\n'
             html += '<div class="tr">\n'
             html += '\t\t\t<div class="td right">Port</div>\n'
@@ -215,11 +237,11 @@ for topic in conf["topics"]:
     html += '\t\t</div>\n'
 
 html += '<p align="right"><input type="submit" value="Submit"></p>\n</form>\n'
+js = tabs_script + deps_script + attach_script + action_script
 if minimize:
     html = htmlmin.minify(html, remove_comments=True, reduce_boolean_attributes=True)
-    js = jsmin(tabs_script + deps_script + attach_script)
-else:
-    js = tabs_script + deps_script + attach_script
+    js = jsmin(js)
+    
 # Script
 html += '\t\t<script>\n{}\n\t\t\n</script>'.format(js)
 # Write footer
