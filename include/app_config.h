@@ -135,6 +135,21 @@ esp_err_t app_config_getBool(const char* element, bool *value);
 esp_err_t app_config_getArray(const char* element, char **value);
 
 /**
+ * @brief      Sets configuration element's value
+ *
+ * Sets value of specified configuration's element depending on its type
+ *
+ * @param[in]   element  Name (label) of the element
+ * @param[out]  value    Pointer to a new value of the element
+ *
+ * @return
+ *             - ESP_OK in case of success
+ *             - ESP_ERR_INVALID_ARG if element has unknown type
+ *             - ESP_ERR_NOT_FOUND if element with specified name not found in configuration
+*/
+esp_err_t app_config_setValue(const char* element, void *value);
+
+/**
  * @brief      Returns JSON representation of configuration
  *
  * Returns pointer to  string containing JSON representation of current configuration.

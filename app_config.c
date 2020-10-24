@@ -144,18 +144,49 @@ app_config_element_t *findElement(const char* element){
 	return NULL;
 }
 
-esp_err_t app_config_getValue(const char* element, uint8_t type, void *value){
-	ESP_LOGI(TAG, "Getting from config: %s", element);
+esp_err_t app_config_getValue(const char* element, enum app_config_element_type_t type, void *value){
+	ESP_LOGD(TAG, "Getting from config: %s", element);
 	app_config_element_t *elt = findElement(element);
 	if(elt != NULL){
 		if(elt->type != type) return ESP_ERR_INVALID_ARG;
 		if(type == boolean) *(bool *)value = *(bool *)elt->value;
-		ESP_LOGI(TAG, "Found: %s", (char *)elt->value);
+		ESP_LOGD(TAG, "Found: %s", (char *)elt->value);
 		if(type == array) *(char **)value = (char *)elt->value;
 		return ESP_OK;
 	} else {
 		return ESP_ERR_NOT_FOUND;
 	}
+}
+
+esp_err_t app_config_setValue(const char* element, void *value){
+	ESP_LOGD(TAG, "Setting element: %s", element);
+	app_config_element_t *elt = findElement(element);
+	if(elt != NULL){
+		switch (elt->type){
+		case boolean:
+			*(bool *)elt->value = *(bool *)value;
+			break;
+		case int8:
+			*(int8_t *)elt->value = *(int8_t *)value;
+			break;		
+		case int16:
+			*(int16_t *)elt->value = *(int16_t *)value;
+			break;		
+		case int32:
+			*(int32_t *)elt->value = *(int32_t *)value;
+			break;		
+		case array:
+			strncpy((char *)elt->value, (char *)value, elt->size);
+			break;		
+		default:
+			ESP_LOGD(TAG, "Wrong type");
+			return ESP_ERR_INVALID_ARG;
+		}
+	} else {
+		ESP_LOGD(TAG, "Element not found");
+		return ESP_ERR_NOT_FOUND;
+	}
+	return ESP_OK;
 }
 
 esp_err_t app_config_getBool(const char* element, bool *value){
