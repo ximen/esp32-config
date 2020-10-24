@@ -145,7 +145,7 @@ fetch(url)
 if minimize:
     css = cssmin(css)
 # Write standard HTML header
-html = '<html>\n\t<head>\n\t\t<meta charset="utf-8">\n\t\t<title>{}</title>\n\t\t<style>{}\n\t\t</style>\n\t</head>\n\t<body style="width: 90%; max-width: 1024px;margin-right: auto;margin-left: auto;background-color:#E6E6FA">\n'.format(conf["name"], css)
+html = '<html>\n\t<head>\n\t\t<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">\n\t\t<title>{}</title>\n\t\t<style>{}\n\t\t</style>\n\t</head>\n\t<body style="width: 90%; max-width: 1024px;margin-right: auto;margin-left: auto;background-color:#E6E6FA">\n'.format(conf["name"], css)
 html += '\t\t<h1>{}</h1>\n'.format(conf["name"])
 
 html += '<form action="{}" method="post">\n'.format(sdkconfig['sdk']['CONFIG_APP_CONFIG_HTML_SET_PATH'].strip('"'))

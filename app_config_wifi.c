@@ -94,6 +94,7 @@ void app_config_wifi_init_sta(){
 	s_wifi_event_group = xEventGroupCreate();
 	ESP_ERROR_CHECK(esp_netif_init());
 	ESP_ERROR_CHECK(esp_event_loop_create_default());
+	esp_netif_create_default_wifi_sta();
 	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
 	ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 	ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_handler, NULL));
@@ -103,9 +104,12 @@ void app_config_wifi_init_sta(){
 	ESP_ERROR_CHECK(app_config_getArray("std_wifi_ssid", &ssid));
 	ESP_ERROR_CHECK(app_config_getArray("std_wifi_psk", &pass));
 	wifi_config_t wifi_config;
-	strncpy((char *)wifi_config.sta.ssid, ssid, APP_CONFIG_MAX_SSID_LEN);
-	strncpy((char *)wifi_config.sta.password, pass, APP_CONFIG_MAX_PSK_LEN);
-	ESP_LOGI(TAG, "SSID: %s, PSK: %s", wifi_config.ap.ssid, wifi_config.ap.password);
+	memcpy(wifi_config.sta.ssid, ssid, strlen(ssid));
+	memcpy(wifi_config.sta.password, pass, strlen(pass));
+	wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
+	wifi_config.sta.pmf_cfg.capable = true;
+	wifi_config.sta.pmf_cfg.required = false;
+	ESP_LOGI(TAG, "SSID: %s, PSK: %s", wifi_config.sta.ssid, wifi_config.sta.password);
 	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
 	ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
 	ESP_ERROR_CHECK(esp_wifi_start());
