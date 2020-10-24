@@ -7,6 +7,7 @@
 #include "app_config.h"
 #include "sdkconfig.h"
 #include "esp_log.h"
+#include "esp_system.h"
 #include "esp_err.h"
 #include "nvs_flash.h"
 #include "string.h"
@@ -150,7 +151,9 @@ esp_err_t app_config_getValue(const char* element, enum app_config_element_type_
 	if(elt != NULL){
 		if(elt->type != type) return ESP_ERR_INVALID_ARG;
 		if(type == boolean) *(bool *)value = *(bool *)elt->value;
-		ESP_LOGD(TAG, "Found: %s", (char *)elt->value);
+		if(type == int8) *(int8_t *)value = *(int8_t *)elt->value;		
+		if(type == int16) *(int16_t *)value = *(int16_t *)elt->value;		
+		if(type == int32) *(int32_t *)value = *(int32_t *)elt->value;		
 		if(type == array) *(char **)value = (char *)elt->value;
 		return ESP_OK;
 	} else {
@@ -339,4 +342,9 @@ char *app_config_toJSON(){
 	cJSON_Delete(json_conf);
 	return json_string;
 
+}
+
+esp_err_t app_config_restart(){
+	esp_restart();
+	return ESP_OK;
 }

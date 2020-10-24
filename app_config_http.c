@@ -17,6 +17,100 @@
 
 httpd_handle_t app_config_http_server;
 
+esp_err_t app_http_get_bool_value(char *string, char *name, bool *value){
+    ESP_LOGD(TAG, "Getting boolean value %s\n", name);
+    char *buf = malloc(strlen(string));
+    if (!buf) {
+        ESP_LOGE(TAG, "Error allocating buffer. Get bool failed.");
+        return ESP_ERR_NO_MEM;
+    }
+    strcpy(buf, string);
+    char *end_str;
+    char* token = strtok_r(buf, "&", &end_str); 
+    while (token) {
+        char *end_token;
+        char* key = strtok_r(token, "=", &end_token); 
+        char *val = strtok_r(NULL, "=", &end_token);
+        if(!val){
+            val="";
+        }
+        token = strtok_r(NULL, "&", &end_str);
+        if(!strcmp(name, key)){
+            if(!strcmp(val, "on")){
+                *value = true;
+                ESP_LOGD(TAG, "Found: true\n");
+                free(buf);
+                return ESP_OK;
+            }
+        }
+    }
+    *value = false;
+    free(buf);
+    ESP_LOGD(TAG, "Not found: false\n");
+    return ESP_OK;
+}
+
+esp_err_t app_http_get_int_value(char *string, char *name, int32_t *value){
+    ESP_LOGD(TAG, "Getting int value %s\n", name);
+    char *buf = malloc(strlen(string));
+    if (!buf) {
+        ESP_LOGE(TAG, "Error allocating buffer. Get int failed.");
+        return ESP_ERR_NO_MEM;
+    }
+    strcpy(buf, string);
+    char *end_str;
+    char* token = strtok_r(buf, "&", &end_str); 
+    while (token) {
+        char *end_token;
+        char* key = strtok_r(token, "=", &end_token); 
+        char *val = strtok_r(NULL, "=", &end_token);
+        if(!val){
+            val="";
+        }
+        token = strtok_r(NULL, "&", &end_str);
+        if(!strcmp(name, key)){
+            int32_t v = (int32_t)strtol(val, (char **)NULL, 10);
+            ESP_LOGD(TAG, "Found: %d\n", v);
+            *value = v;
+            free(buf);
+            return ESP_OK;
+        }
+    }
+    free(buf);
+    ESP_LOGD(TAG, "Not found");
+    return ESP_ERR_NOT_FOUND;
+}
+
+esp_err_t app_http_get_string_value(char *string, char *name, char *value){
+    ESP_LOGD(TAG, "Getting string value %s\n", name);
+    char *buf = malloc(strlen(string));
+    if (!buf) {
+        ESP_LOGE(TAG, "Error allocating buffer. Get string failed.");
+        return ESP_ERR_NO_MEM;
+    }
+    strcpy(buf, string);
+    char *end_str;
+    char *token = strtok_r(buf, "&", &end_str); 
+    while (token) {
+        char *end_token;
+        char* key = strtok_r(token, "=", &end_token); 
+        char *val = strtok_r(NULL, "=", &end_token);
+        if (!val){
+            val = "";
+        }
+        token = strtok_r(NULL, "&", &end_str);
+        if(!strcmp(name, key)){
+            ESP_LOGD(TAG, "Found: %s\n", val);
+            strcpy(value, val);
+            free(buf);
+            return ESP_OK;
+        }
+    }
+    free(buf);
+    ESP_LOGD(TAG, "Not found");
+    return ESP_ERR_NOT_FOUND;
+}
+
 esp_err_t get_conf_handler(httpd_req_t *req){
     char *json_conf = app_config_toJSON();
     if (json_conf == NULL){
@@ -35,8 +129,73 @@ esp_err_t get_html_handler(httpd_req_t *req){
 }
 
 esp_err_t post_conf_handler(httpd_req_t *req){
-    ESP_LOGI(TAG, "Post handler triggered");
-    httpd_resp_send_500(req);    
+    ESP_LOGI(TAG, "Parsing new config");
+    char *buf = malloc(sizeof(char)*req->content_len);
+    if(buf == NULL) {
+        ESP_LOGE(TAG, "Error allocating buffer. Parsing POST request failed.");
+        return ESP_ERR_NO_MEM;
+    }
+    int ret = httpd_req_recv(req, buf, req->content_len);
+    if (ret <= 0) {  /* 0 return value indicates connection closed */
+        /* Check if timeout occurred */
+        if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
+            /* In case of timeout one can choose to retry calling
+             * httpd_req_recv(), but to keep it simple, here we
+             * respond with an HTTP 408 (Request Timeout) error */
+            httpd_resp_send_408(req);
+        }
+        /* In case of error, returning ESP_FAIL will
+         * ensure that the underlying socket is closed */
+        free(buf);
+        return ESP_FAIL;
+    }
+    buf[req->content_len] = 0;
+    /* Send a simple response */
+    //const char resp[] = "URI POST Response";
+    app_config_t *app_conf = app_config_get();
+    ESP_LOGW(TAG, "Topic number %d", app_conf->topics_number);
+	for (uint8_t i = 0; i < app_conf->topics_number; i++){
+        ESP_LOGW(TAG, "Topic %s, Elements number %d", app_conf->topics[i].short_name, app_conf->topics[i].elements_number);
+        for (uint8_t j = 0; j < app_conf->topics[i].elements_number; j++){
+            ESP_LOGW(TAG, "Number %d, j=%d", app_conf->topics[i].elements_number, j);
+            ESP_LOGI(TAG, "Looking for %s", app_conf->topics[i].elements[j].short_name);
+            if (app_conf->topics[i].elements[j].type == boolean){
+                bool tmp = false;
+                app_http_get_bool_value(buf, app_conf->topics[i].elements[j].short_name, &tmp);
+                ESP_LOGI(TAG, "Got %d", tmp);
+                app_config_setValue(app_conf->topics[i].elements[j].short_name, &tmp);
+            } else if (app_conf->topics[i].elements[j].type == int8){
+                int32_t tmp;
+                app_http_get_int_value(buf, app_conf->topics[i].elements[j].short_name, &tmp);
+                ESP_LOGI(TAG, "Got %d", tmp);
+                int8_t tmp8 = (int8_t)tmp;
+                app_config_setValue(app_conf->topics[i].elements[j].short_name, &tmp8);
+            } else if (app_conf->topics[i].elements[j].type == int16){
+                int32_t tmp;
+                app_http_get_int_value(buf, app_conf->topics[i].elements[j].short_name, &tmp);
+                ESP_LOGI(TAG, "Got %d", tmp);
+                int16_t tmp16 = (int16_t)tmp;
+                app_config_setValue(app_conf->topics[i].elements[j].short_name, &tmp16);
+            } else if (app_conf->topics[i].elements[j].type == int32){
+                int32_t tmp;
+                app_http_get_int_value(buf, app_conf->topics[i].elements[j].short_name, &tmp);
+                ESP_LOGI(TAG, "Got %d", tmp);
+                app_config_setValue(app_conf->topics[i].elements[j].short_name, &tmp);
+            } else if (app_conf->topics[i].elements[j].type == array){
+                char tmp[100];
+                app_http_get_string_value(buf, app_conf->topics[i].elements[j].short_name, tmp);
+                ESP_LOGI(TAG, "Got %s", tmp);
+                app_config_setValue(app_conf->topics[i].elements[j].short_name, tmp);
+            } else {
+
+            }
+        }
+	}
+    ESP_LOGD(TAG, "Saving new configuration");
+    app_config_save();
+    app_config_restart();
+    httpd_resp_send(req, buf, HTTPD_RESP_USE_STRLEN);
+    free(buf);
 	return ESP_OK;
 }
 
@@ -90,3 +249,5 @@ esp_err_t app_config_http_init(){
     app_config_http_server = start_webserver();
 	return ESP_OK;
 }
+
+

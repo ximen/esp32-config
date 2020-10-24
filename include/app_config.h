@@ -150,6 +150,18 @@ esp_err_t app_config_getArray(const char* element, char **value);
 esp_err_t app_config_setValue(const char* element, void *value);
 
 /**
+ * @brief      Saves configuration
+ *
+ * Saves current configuration to NVS
+ *
+  * @return
+ *             - ESP_OK in case of success
+ *             - one of error codes if fails
+*/
+esp_err_t app_config_save();
+esp_err_t app_config_restart();
+
+/**
  * @brief      Returns JSON representation of configuration
  *
  * Returns pointer to  string containing JSON representation of current configuration.
