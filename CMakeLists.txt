@@ -5,18 +5,21 @@ idf_component_register(SRCS "app_config.c" "app_config_wifi.c" "app_config_http.
 if(NOT CMAKE_BUILD_EARLY_EXPANSION) 
 
 add_custom_target(config_defs 
+     COMMENT "Generation configuration includes..."
      COMMAND python ${COMPONENT_DIR}/generate_config.py ${PROJECT_DIR} ${CONFIG_APP_CONFIG_FILE_NAME} ${COMPONENT_DIR})
 add_custom_target(config_html 
+     COMMENT "Generation HTML includes..."
      COMMAND python ${COMPONENT_DIR}/generate_html.py ${PROJECT_DIR} ${COMPONENT_DIR})
 
 if(CONFIG_APP_CONFIG_BLUETOOTH_MESH)     
      add_custom_target(config_ble_mesh
+          COMMENT "Generation Bluetooth Mesh includes..."
           COMMAND python ${COMPONENT_DIR}/generate_ble_mesh.py ${PROJECT_DIR} ${COMPONENT_DIR})
      add_dependencies(${COMPONENT_LIB} config_ble_mesh)
-endif()
+endif(CONFIG_APP_CONFIG_BLUETOOTH_MESH)
 
 add_dependencies(${COMPONENT_LIB} config_defs config_html)
 
 set_property(DIRECTORY "${COMPONENT_DIR}" APPEND PROPERTY
      ADDITIONAL_MAKE_CLEAN_FILES config_defs.h config.html config_html.h config_ble_mesh.h)
-endif()                        
+endif(NOT CMAKE_BUILD_EARLY_EXPANSION)                        

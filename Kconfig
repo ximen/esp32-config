@@ -72,7 +72,7 @@ config APP_CONFIG_MINIMIZE_HTML
 
 config APP_CONFIG_BLUETOOTH_MESH
     bool "Bluetooth Mesh support"
-    default y
+    default n
     help
         Generate code for Bluetooth Mesh elements.
 
