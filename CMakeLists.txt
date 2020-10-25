@@ -9,8 +9,14 @@ add_custom_target(config_defs
 add_custom_target(config_html 
      COMMAND python ${COMPONENT_DIR}/generate_html.py ${PROJECT_DIR} ${COMPONENT_DIR})
 
+if(CONFIG_APP_CONFIG_BLUETOOTH_MESH)     
+     add_custom_target(config_ble_mesh
+          COMMAND python ${COMPONENT_DIR}/generate_ble_mesh.py ${PROJECT_DIR} ${COMPONENT_DIR})
+     add_dependencies(${COMPONENT_LIB} config_ble_mesh)
+endif()
+
 add_dependencies(${COMPONENT_LIB} config_defs config_html)
 
 set_property(DIRECTORY "${COMPONENT_DIR}" APPEND PROPERTY
-     ADDITIONAL_MAKE_CLEAN_FILES config_defs.h config.html config_html.h)
+     ADDITIONAL_MAKE_CLEAN_FILES config_defs.h config.html config_html.h config_ble_mesh.h)
 endif()                        

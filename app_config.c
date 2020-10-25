@@ -13,6 +13,9 @@
 #include "string.h"
 #include "config_defs.h"
 #include "cJSON.h"
+#ifdef APP_CONFIG_STD_BLE_MESH
+#include "config_ble_mesh.h"
+#endif
 
 #define TAG "APP_CONFIG"
 static nvs_handle_t app_config_nvs_hanle;

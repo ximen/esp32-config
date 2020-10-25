@@ -69,4 +69,16 @@ config APP_CONFIG_MINIMIZE_HTML
     default y
     help
         Try to create more compact HTML.
-        
+
+config APP_CONFIG_BLUETOOTH_MESH
+    bool "Bluetooth Mesh support"
+    default y
+    help
+        Generate code for Bluetooth Mesh elements.
+
+config APP_CONFIG_BLE_MESH_FILE_NAME
+    string "BLE Mesh configuration filename"
+    default "conf_ble_mesh.json"
+    help
+        Filename of JSON file containing declaration for Bluetooth Mesh functions.
+                
