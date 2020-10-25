@@ -186,6 +186,11 @@ esp_err_t post_conf_handler(httpd_req_t *req){
                 app_http_get_string_value(buf, app_conf->topics[i].elements[j].short_name, tmp);
                 ESP_LOGI(TAG, "Got %s", tmp);
                 app_config_setValue(app_conf->topics[i].elements[j].short_name, tmp);
+            } else if (app_conf->topics[i].elements[j].type == string){
+                char tmp[100];
+                app_http_get_string_value(buf, app_conf->topics[i].elements[j].short_name, tmp);
+                ESP_LOGI(TAG, "Got %s", tmp);
+                app_config_setValue(app_conf->topics[i].elements[j].short_name, tmp);
             } else {
 
             }

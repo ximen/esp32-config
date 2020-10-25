@@ -21,7 +21,7 @@ enum app_config_element_type_t{
 	int8,
 	int16,
 	int32,
-	//string,
+	string,
 	array
 };
 
@@ -30,8 +30,8 @@ typedef struct {
 	char 							name[CONFIG_APP_CONFIG_ELT_NAME_LEN];			// Configuration element's name
 	char 							short_name[CONFIG_APP_CONFIG_SHORT_NAME_LEN];	// Configuration element's short name
 	enum app_config_element_type_t	type;											// Configuration element's type
-	size_t							size;											// Configuration element's length in bytes
-	void							*value;
+	size_t							size;											// Configuration element's value length in bytes
+	void							*value;											// Configuration element's value itself
 } app_config_element_t;
 
 // Structure defines configuration topic collecting elements referring to one subject
@@ -56,6 +56,7 @@ typedef struct {
 #define APP_CONFIG_DEFINE_INT8(_short, _name)  { _name, #_short, int8, sizeof(_short), &_short}
 #define APP_CONFIG_DEFINE_INT16(_short, _name)  { _name, #_short, int16, sizeof(_short), &_short}
 #define APP_CONFIG_DEFINE_INT32(_short, _name)  { _name, #_short, int32, sizeof(_short), &_short}
+#define APP_CONFIG_DEFINE_STRING(_short, _name)  { _name, #_short, string, sizeof(_short), _short}
 #define APP_CONFIG_DEFINE_ARRAY(_short, _name) { _name, #_short, array, sizeof(_short), _short}
 #define APP_CONFIG_DEFINE_TOPIC(_short, _name, _elements) { _name, #_short, sizeof(_elements)/sizeof(_elements[0]), _elements}
 #define APP_CONFIG_DEFINE_STD_WIFI(_name, _def_ssid, _def_psk) \
@@ -64,20 +65,18 @@ typedef struct {
 		static char	std_wifi_psk[APP_CONFIG_MAX_SSID_LEN] = _def_psk; \
 		static app_config_element_t config_std_wifi_elements[] = { \
 		APP_CONFIG_DEFINE_BOOL(std_wifi_ap, "Access point"), \
-		APP_CONFIG_DEFINE_ARRAY(std_wifi_ssid, "SSID"), \
-		APP_CONFIG_DEFINE_ARRAY(std_wifi_psk, "PSK") };
+		APP_CONFIG_DEFINE_STRING(std_wifi_ssid, "SSID"), \
+		APP_CONFIG_DEFINE_STRING(std_wifi_psk, "PSK") };
 #define APP_CONFIG_DEFINE_STD_MQTT(_name, _def_port) \
 		static char	std_mqtt_broker[CONFIG_APP_CONFIG_MQTT_BROKER_LEN]; \
 		static uint16_t	std_mqtt_port = _def_port; \
 		static char	std_mqtt_user[CONFIG_APP_CONFIG_MQTT_USER_LEN]; \
 		static char	std_mqtt_pass[CONFIG_APP_CONFIG_MQTT_PASS_LEN]; \
 		static app_config_element_t config_std_mqtt_elements[] = { \
-		APP_CONFIG_DEFINE_ARRAY(std_mqtt_broker, "Broker"), \
+		APP_CONFIG_DEFINE_STRING(std_mqtt_broker, "Broker"), \
 		APP_CONFIG_DEFINE_INT16(std_mqtt_port, "Port"), \
-		APP_CONFIG_DEFINE_ARRAY(std_mqtt_user, "Username"), \
-		APP_CONFIG_DEFINE_ARRAY(std_mqtt_pass, "Password") };
-#define APP_CONFIG_DEFINE_STD_BLE_MESH(_name) \
-		static app_config_element_t config_std_ble_mesh_elements[] = { };
+		APP_CONFIG_DEFINE_STRING(std_mqtt_user, "Username"), \
+		APP_CONFIG_DEFINE_STRING(std_mqtt_pass, "Password") };
 
 
 /**
@@ -133,6 +132,20 @@ esp_err_t app_config_getBool(const char* element, bool *value);
  *             - one of the error codes in other case
 */
 esp_err_t app_config_getArray(const char* element, char **value);
+
+/**
+ * @brief      Returns string from stored configuration
+ *
+ * Returns pointer to null-terminated string stored in element 
+ *
+ * @param[in]   element  Name (label) of the required element
+ * @param[out]  value    Pointer to char* variable for returning value
+ *
+ * @return
+ *             - ESP_OK if configuration was initialized successfully
+ *             - one of the error codes in other case
+*/
+esp_err_t app_config_getString(const char* element, char **value);
 
 /**
  * @brief      Sets configuration element's value

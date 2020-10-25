@@ -132,6 +132,8 @@ function fillValues(config){{
                 input.value = elt.value;
             }} else if (elt.type == "array") {{
                 input.value = elt.value;
+            }} else if (elt.type == "string") {{
+                input.value = elt.value;
             }}
         }}
     }}
@@ -184,6 +186,8 @@ for topic in conf["topics"]:
                 html += '\t\t\t<div class="td"><input type="checkbox" name="{0}"></div>\n'.format(elt["short_name"])
             if elt["type"] == "array":
                 html += '\t\t\t<div class="td"><input type="text" maxlength="{0}" name="{1}"></div>\n'.format(elt["size"], elt["short_name"])
+            if elt["type"] == "string":
+                html += '\t\t\t<div class="td"><input type="text" maxlength="{0}" name="{1}"></div>\n'.format(elt["size"], elt["short_name"])
             if elt["type"] == "int8":
                 html += '\t\t\t<div class="td"><input type="number" max="255" name="{0}"></div>\n'.format(elt["short_name"])
             if elt["type"] == "int16":
@@ -225,7 +229,7 @@ for topic in conf["topics"]:
             html += '</div>\n'
             html += '<div class="tr">\n'
             html += '\t\t\t<div class="td right">Password</div>\n'
-            html += '\t\t\t<div class="td"><input type="text" name="std_mqtt_pass"></div>\n'
+            html += '\t\t\t<div class="td"><input type="password" name="std_mqtt_pass"></div>\n'
             html += '</div>\n'
             html += '</fieldset>\n'
         elif topic.get("std_ble_mesh") == True:

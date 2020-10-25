@@ -13,7 +13,9 @@
 #include "string.h"
 #include "config_defs.h"
 #include "cJSON.h"
-#ifdef APP_CONFIG_STD_BLE_MESH
+#include "app_config_wifi.h"
+#include "app_config_http.h"
+#ifdef CONFIG_APP_CONFIG_BLUETOOTH_MESH
 #include "config_ble_mesh.h"
 #endif
 
@@ -36,6 +38,9 @@ esp_err_t app_config_load_element(app_config_element_t *element){
 		break;
 	case array:
 		err = nvs_get_blob(app_config_nvs_hanle, element->short_name, element->value, &element->size);
+		break;
+	case string:
+		err = nvs_get_str(app_config_nvs_hanle, element->short_name, element->value, &element->size);
 		break;
 	case int8:
 		err = nvs_get_u8(app_config_nvs_hanle, element->short_name, element->value);
@@ -98,6 +103,9 @@ esp_err_t app_config_save_element(app_config_element_t *element){
 	case array:
 		err = nvs_set_blob(app_config_nvs_hanle, element->short_name, element->value, element->size);
 		break;
+	case string:
+		err = nvs_set_str(app_config_nvs_hanle, element->short_name, element->value);
+		break;
 	case int8:
 		err = nvs_set_u8(app_config_nvs_hanle, element->short_name, *(uint8_t *)element->value);
 		break;
@@ -158,6 +166,7 @@ esp_err_t app_config_getValue(const char* element, enum app_config_element_type_
 		if(type == int16) *(int16_t *)value = *(int16_t *)elt->value;		
 		if(type == int32) *(int32_t *)value = *(int32_t *)elt->value;		
 		if(type == array) *(char **)value = (char *)elt->value;
+		if(type == string) *(char **)value = (char *)elt->value;
 		return ESP_OK;
 	} else {
 		return ESP_ERR_NOT_FOUND;
@@ -184,6 +193,9 @@ esp_err_t app_config_setValue(const char* element, void *value){
 		case array:
 			strncpy((char *)elt->value, (char *)value, elt->size);
 			break;		
+		case string:
+			strncpy((char *)elt->value, (char *)value, elt->size);
+			break;		
 		default:
 			ESP_LOGD(TAG, "Wrong type");
 			return ESP_ERR_INVALID_ARG;
@@ -201,6 +213,12 @@ esp_err_t app_config_getBool(const char* element, bool *value){
 
 esp_err_t app_config_getArray(const char* element, char **value){
 	esp_err_t err = app_config_getValue(element, array, value);
+	ESP_LOGI(TAG, "Found: %s", *value);
+	return err;
+}
+
+esp_err_t app_config_getString(const char* element, char **value){
+	esp_err_t err = app_config_getValue(element, string, value);
 	ESP_LOGI(TAG, "Found: %s", *value);
 	return err;
 }
@@ -325,6 +343,16 @@ char *app_config_toJSON(){
 				break;
 				case array:
 					if (cJSON_AddStringToObject(element, "type", "array") == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
+					if (cJSON_AddStringToObject(element, "value", (char *)app_conf.topics[i].elements[j].value) == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
+				break;
+				case string:
+					if (cJSON_AddStringToObject(element, "type", "string") == NULL){
 	   			   		cJSON_Delete(json_conf);
 						return NULL;
         			}

@@ -71,8 +71,8 @@ void app_config_wifi_init_ap(){
 	ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_handler, NULL));
 	char *ssid = "";
 	char *pass = "";
-	ESP_ERROR_CHECK(app_config_getArray("std_wifi_ssid", &ssid));
-	ESP_ERROR_CHECK(app_config_getArray("std_wifi_psk", &pass));
+	ESP_ERROR_CHECK(app_config_getString("std_wifi_ssid", &ssid));
+	ESP_ERROR_CHECK(app_config_getString("std_wifi_psk", &pass));
 	wifi_config_t wifi_config = {
 			.ap = {
 					.ssid_len = strlen(ssid),
@@ -101,11 +101,11 @@ void app_config_wifi_init_sta(){
 	ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_handler, NULL));
 	char *ssid = "";
 	char *pass = "";
-	ESP_ERROR_CHECK(app_config_getArray("std_wifi_ssid", &ssid));
-	ESP_ERROR_CHECK(app_config_getArray("std_wifi_psk", &pass));
-	wifi_config_t wifi_config;
-	memcpy(wifi_config.sta.ssid, ssid, strlen(ssid));
-	memcpy(wifi_config.sta.password, pass, strlen(pass));
+	ESP_ERROR_CHECK(app_config_getString("std_wifi_ssid", &ssid));
+	ESP_ERROR_CHECK(app_config_getString("std_wifi_psk", &pass));
+	wifi_config_t wifi_config = {};
+	strcpy((char *)wifi_config.sta.ssid, ssid);
+	strcpy((char *)wifi_config.sta.password, pass);
 	wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
 	wifi_config.sta.pmf_cfg.capable = true;
 	wifi_config.sta.pmf_cfg.required = false;

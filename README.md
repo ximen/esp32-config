@@ -53,15 +53,11 @@ Sample projects using this components are [Thermostat](https://github.com/ximen/
 #include "esp_err.h"
 #include "esp_log.h"
 #include "app_config.h"
-#include "app_config_wifi.h"
-#include "app_config_http.h"
 
 #define TAG "MAIN"
 
 void app_main(void){
     ESP_ERROR_CHECK(app_config_init());		    // Initializing and loading configuration
-    ESP_ERROR_CHECK(app_config_wifi_init());	 // Initializing wifi
-    ESP_ERROR_CHECK(app_config_http_init());	// Initializing HTTP
     char *tmp;
     ESP_ERROR_CHECK(app_config_getArray("string_var", &tmp));
     ESP_LOGI(TAG, "String variable: %s", tmp);

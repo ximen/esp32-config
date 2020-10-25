@@ -23,8 +23,6 @@ def isStdTopic(topic):
         return True
     if topic.get("std_mqtt") == True:
         return True
-    if topic.get("std_ble_mesh") == True:
-        return True
     return False
 
 for topic in conf["topics"]:
@@ -33,6 +31,8 @@ for topic in conf["topics"]:
             if elt["type"] == "boolean":
                 h_file.write("static bool\t" + elt["short_name"] + ";\n")
             if elt["type"] == "array":
+                h_file.write("static char\t" + elt["short_name"] + "[" + str(elt["size"]) + "];\n")
+            if elt["type"] == "string":
                 h_file.write("static char\t" + elt["short_name"] + "[" + str(elt["size"]) + "];\n")
             if elt["type"] == "int8":
                 h_file.write("static uint8_t\t" + elt["short_name"] + ";\n")
@@ -48,9 +48,6 @@ for topic in conf["topics"]:
     elif topic.get("std_mqtt") == True:
         h_file.write("\n#define\t\tAPP_CONFIG_STD_MQTT\t1\n")
         h_file.write("APP_CONFIG_DEFINE_STD_MQTT(\"" + topic["name"] + "\", 1883)\n")
-    elif topic.get("std_ble_mesh") == True:
-        h_file.write("\n#define\t\tAPP_CONFIG_STD_BLE_MESH\t1\n")
-        h_file.write("APP_CONFIG_DEFINE_STD_BLE_MESH(\"" + topic["name"] + "\")\n")
     else:
         h_file.write("\nstatic app_config_element_t config_" + topic["short_name"] + "_elements[] = {\n")
         for elt in topic["elements"]:
@@ -58,6 +55,8 @@ for topic in conf["topics"]:
                 h_file.write("\tAPP_CONFIG_DEFINE_BOOL(" + elt["short_name"] + ", \"" + elt["name"] + "\"),\n")
             if elt["type"] == "array":
                 h_file.write("\tAPP_CONFIG_DEFINE_ARRAY(" + elt["short_name"] + ", \"" + elt["name"] + "\"),\n")
+            if elt["type"] == "string":
+                h_file.write("\tAPP_CONFIG_DEFINE_STRING(" + elt["short_name"] + ", \"" + elt["name"] + "\"),\n")
             if elt["type"] == "int8":
                 h_file.write("\tAPP_CONFIG_DEFINE_INT8(" + elt["short_name"] + ", \"" + elt["name"] + "\"),\n")
             if elt["type"] == "int16":
@@ -72,8 +71,6 @@ for topic in conf["topics"]:
         h_file.write("\tAPP_CONFIG_DEFINE_TOPIC(std_wifi_topic , \"" + topic["name"] + "\", config_std_wifi_elements),\n")
     elif topic.get("std_mqtt") == True:
         h_file.write("\tAPP_CONFIG_DEFINE_TOPIC(std_mqtt_topic , \"" + topic["name"] + "\", config_std_mqtt_elements),\n")
-    elif topic.get("std_ble_mesh") == True:
-        h_file.write("\tAPP_CONFIG_DEFINE_TOPIC(std_ble_mesh_topic , \"" + topic["name"] + "\", config_std_ble_mesh_elements),\n")
     else:
         h_file.write("\tAPP_CONFIG_DEFINE_TOPIC(" + topic["short_name"] + ", \"" + topic["name"] + "\", config_" + topic["short_name"] + "_elements),\n")
 h_file.write("};\n\n")
