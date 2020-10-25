@@ -117,10 +117,6 @@ void app_config_wifi_init_sta(){
 }
 
 esp_err_t app_config_wifi_init(){
-	if (!APP_CONFIG_STD_WIFI) {
-		ESP_LOGE(TAG, "STD_WIFI element not defined");
-		return ESP_ERR_NOT_FOUND;
-	}
 	esp_err_t err;
 	bool ap;
 	err = app_config_getBool("std_wifi_ap", &ap);

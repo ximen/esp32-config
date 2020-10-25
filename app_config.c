@@ -228,6 +228,13 @@ esp_err_t app_config_init(){
 	if (err != ESP_OK) {
 		ESP_LOGE(TAG, "Error loading configuration (err %d)", err);
 	}
+	// Starting WiFi
+	if (APP_CONFIG_STD_WIFI) {
+		ESP_LOGD(TAG, "STD_WIFI defined. Starting WiFi");
+		ESP_ERROR_CHECK(app_config_wifi_init());
+		ESP_ERROR_CHECK(app_config_http_init());
+	}
+
 	return ESP_OK;
 }
 
