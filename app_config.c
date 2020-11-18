@@ -250,8 +250,6 @@ esp_err_t app_config_init(){
 		ESP_ERROR_CHECK(app_config_http_init());
 	}
 
-	// Starting Bluetooth Mesh
-	if (APP_CONFIG_B)
 	return ESP_OK;
 }
 
