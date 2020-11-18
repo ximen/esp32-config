@@ -15,9 +15,6 @@
 #include "cJSON.h"
 #include "app_config_wifi.h"
 #include "app_config_http.h"
-#ifdef CONFIG_APP_CONFIG_BLUETOOTH_MESH
-#include "config_ble_mesh.h"
-#endif
 
 #define TAG "APP_CONFIG"
 static nvs_handle_t app_config_nvs_hanle;
@@ -253,6 +250,8 @@ esp_err_t app_config_init(){
 		ESP_ERROR_CHECK(app_config_http_init());
 	}
 
+	// Starting Bluetooth Mesh
+	if (APP_CONFIG_B)
 	return ESP_OK;
 }
 

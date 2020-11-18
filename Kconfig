@@ -81,9 +81,4 @@ config APP_CONFIG_BLE_MESH_FILE_NAME
     default "conf_ble_mesh.json"
     help
         Filename of JSON file containing declaration for Bluetooth Mesh functions.
-
-config APP_CONFIG_BLE_MESH_CID
-    string "CID"
-    default "0x02E5"
-    help
-        BLE Channel ID.
+                

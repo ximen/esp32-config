@@ -1,3 +1,4 @@
 config_defs.h
 config_html.h
 config_ble_mesh.h
+app_config_ble_mesh.c

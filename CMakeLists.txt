@@ -1,8 +1,16 @@
-idf_component_register(SRCS "app_config.c" "app_config_wifi.c" "app_config_http.c"
-                       INCLUDE_DIRS "include"
-                       REQUIRES nvs_flash esp_http_server json)
+set(srcs "app_config.c" "app_config_wifi.c" "app_config_http.c")
+set(reqs nvs_flash esp_http_server json bt)
 
-if(NOT CMAKE_BUILD_EARLY_EXPANSION) 
+if(CONFIG_APP_CONFIG_BLUETOOTH_MESH)
+     list(APPEND srcs "app_config_ble_mesh.c")
+     list(APPEND reqs bt)
+endif(CONFIG_APP_CONFIG_BLUETOOTH_MESH)
+
+idf_component_register(SRCS ${srcs}
+                       INCLUDE_DIRS "include"
+                       REQUIRES ${reqs})
+
+if(NOT CMAKE_BUILD_EARLY_EXPANSION)
 
 add_custom_target(config_defs 
      COMMENT "Generation configuration includes..."
@@ -21,5 +29,5 @@ endif(CONFIG_APP_CONFIG_BLUETOOTH_MESH)
 add_dependencies(${COMPONENT_LIB} config_defs config_html)
 
 set_property(DIRECTORY "${COMPONENT_DIR}" APPEND PROPERTY
-     ADDITIONAL_MAKE_CLEAN_FILES config_defs.h config.html config_html.h config_ble_mesh.h)
+     ADDITIONAL_MAKE_CLEAN_FILES config_defs.h config.html config_html.h app_config_ble_mesh.c)
 endif(NOT CMAKE_BUILD_EARLY_EXPANSION)                        
