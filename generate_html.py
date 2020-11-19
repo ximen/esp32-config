@@ -127,7 +127,7 @@ function fillValues(config){{
             input = document.getElementsByName(elt.short_name)[0]
             if (elt.type == "bool"){{
                 input.checked = elt.value;
-                elt.onclick;
+                if(input.onclick) input.onclick();
             }} else if (elt.type == "int") {{
                 input.value = elt.value;
             }} else if (elt.type == "array") {{
