@@ -162,29 +162,29 @@ esp_err_t post_conf_handler(httpd_req_t *req){
             if (app_conf->topics[i].elements[j].type == boolean){
                 bool tmp = false;
                 app_http_get_bool_value(buf, app_conf->topics[i].elements[j].short_name, &tmp);
-                ESP_LOGI(TAG, "Got %d", tmp);
+                ESP_LOGD(TAG, "Got %d", tmp);
                 app_config_setValue(app_conf->topics[i].elements[j].short_name, &tmp);
             } else if (app_conf->topics[i].elements[j].type == int8){
                 int32_t tmp;
                 app_http_get_int_value(buf, app_conf->topics[i].elements[j].short_name, &tmp);
-                ESP_LOGI(TAG, "Got %d", tmp);
+                ESP_LOGD(TAG, "Got %d", tmp);
                 int8_t tmp8 = (int8_t)tmp;
                 app_config_setValue(app_conf->topics[i].elements[j].short_name, &tmp8);
             } else if (app_conf->topics[i].elements[j].type == int16){
                 int32_t tmp;
                 app_http_get_int_value(buf, app_conf->topics[i].elements[j].short_name, &tmp);
-                ESP_LOGI(TAG, "Got %d", tmp);
+                ESP_LOGD(TAG, "Got %d", tmp);
                 int16_t tmp16 = (int16_t)tmp;
                 app_config_setValue(app_conf->topics[i].elements[j].short_name, &tmp16);
             } else if (app_conf->topics[i].elements[j].type == int32){
                 int32_t tmp;
                 app_http_get_int_value(buf, app_conf->topics[i].elements[j].short_name, &tmp);
-                ESP_LOGI(TAG, "Got %d", tmp);
+                ESP_LOGD(TAG, "Got %d", tmp);
                 app_config_setValue(app_conf->topics[i].elements[j].short_name, &tmp);
             } else if (app_conf->topics[i].elements[j].type == array){
                 char tmp[100];
                 app_http_get_string_value(buf, app_conf->topics[i].elements[j].short_name, tmp);
-                ESP_LOGI(TAG, "Got %s", tmp);
+                ESP_LOGD(TAG, "Got %s", tmp);
                 app_config_setValue(app_conf->topics[i].elements[j].short_name, tmp);
             } else if (app_conf->topics[i].elements[j].type == string){
                 char tmp[100];

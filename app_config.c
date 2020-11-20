@@ -35,9 +35,11 @@ esp_err_t app_config_load_element(app_config_element_t *element){
 		break;
 	case array:
 		err = nvs_get_blob(app_config_nvs_hanle, element->short_name, element->value, &element->size);
+		ESP_LOGD(TAG, "Got %s", (char *)element->value);
 		break;
 	case string:
 		err = nvs_get_str(app_config_nvs_hanle, element->short_name, element->value, &element->size);
+		ESP_LOGI(TAG, "Got %s", (char *)element->value);
 		break;
 	case int8:
 		err = nvs_get_u8(app_config_nvs_hanle, element->short_name, element->value);
@@ -101,6 +103,7 @@ esp_err_t app_config_save_element(app_config_element_t *element){
 		err = nvs_set_blob(app_config_nvs_hanle, element->short_name, element->value, element->size);
 		break;
 	case string:
+		ESP_LOGI(TAG,"Saving string %s, value %s", element->short_name, (char*)element->value);
 		err = nvs_set_str(app_config_nvs_hanle, element->short_name, element->value);
 		break;
 	case int8:
@@ -192,6 +195,7 @@ esp_err_t app_config_setValue(const char* element, void *value){
 			break;		
 		case string:
 			strncpy((char *)elt->value, (char *)value, elt->size);
+			ESP_LOGI(TAG, "Setting %s, value %s, size %d", elt->short_name, (char *)elt->value, elt->size);
 			break;		
 		default:
 			ESP_LOGD(TAG, "Wrong type");
