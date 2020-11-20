@@ -33,7 +33,10 @@ for topic in conf["topics"]:
             if elt["type"] == "array":
                 h_file.write("static char\t" + elt["short_name"] + "[" + str(elt["size"]) + "];\n")
             if elt["type"] == "string":
-                h_file.write("static char\t" + elt["short_name"] + "[" + str(elt["size"]) + "];\n")
+                if elt.get("default"):
+                    h_file.write("static char\t" + elt["short_name"] + "[" + str(elt["size"]) + "] = \"{0}\";\n".format(elt["default"]))
+                else:
+                    h_file.write("static char\t" + elt["short_name"] + "[" + str(elt["size"]) + "];\n")
             if elt["type"] == "int8":
                 h_file.write("static uint8_t\t" + elt["short_name"] + ";\n")
             if elt["type"] == "int16":
