@@ -6,6 +6,8 @@
  */
 
 #include <stdint.h>
+#include <ctype.h>
+#include <stdlib.h>
 #include "esp_err.h"
 #include "esp_log.h"
 #include "app_config.h"
@@ -16,6 +18,36 @@
 #define TAG "APP_CONFIG_HTTP"
 
 httpd_handle_t app_config_http_server;
+
+void urldecode(char *dst, const char *src){
+        char a, b;
+        while (*src) {
+                if ((*src == '%') &&
+                    ((a = src[1]) && (b = src[2])) &&
+                    (isxdigit(a) && isxdigit(b))) {
+                        if (a >= 'a')
+                                a -= 'a'-'A';
+                        if (a >= 'A')
+                                a -= ('A' - 10);
+                        else
+                                a -= '0';
+                        if (b >= 'a')
+                                b -= 'a'-'A';
+                        if (b >= 'A')
+                                b -= ('A' - 10);
+                        else
+                                b -= '0';
+                        *dst++ = 16*a+b;
+                        src+=3;
+                } else if (*src == '+') {
+                        *dst++ = ' ';
+                        src++;
+                } else {
+                        *dst++ = *src++;
+                }
+        }
+        *dst++ = '\0';
+}
 
 esp_err_t app_http_get_bool_value(char *string, char *name, bool *value){
     ESP_LOGD(TAG, "Getting boolean value %s\n", name);
@@ -83,12 +115,13 @@ esp_err_t app_http_get_int_value(char *string, char *name, int32_t *value){
 
 esp_err_t app_http_get_string_value(char *string, char *name, char *value){
     ESP_LOGD(TAG, "Getting string value %s\n", name);
-    char *buf = malloc(strlen(string));
+    char *buf = malloc(strlen(string)+1);
     if (!buf) {
         ESP_LOGE(TAG, "Error allocating buffer. Get string failed.");
         return ESP_ERR_NO_MEM;
     }
-    strcpy(buf, string);
+    urldecode(buf, string);
+    //strcpy(buf, string);
     char *end_str;
     char *token = strtok_r(buf, "&", &end_str); 
     while (token) {
