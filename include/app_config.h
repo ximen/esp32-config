@@ -148,6 +148,22 @@ esp_err_t app_config_getArray(const char* element, char **value);
 esp_err_t app_config_getString(const char* element, char **value);
 
 /**
+ * @brief      Returns value from stored configuration
+ *
+ * Returns stored value of given type in specified pointer
+ *
+ * @param[in]   element  Name (label) of the required element
+ * @param[in]   type  	 Type of requested element element
+ * @param[out]  value    Pointer to variable for returning value
+ *
+ * @return
+ *             - ESP_OK if configuration was initialized successfully
+ *             - ESP_ERR_INVALID_ARG if soecified type does not match element's type
+ * 			   - ESP_ERR_NOT_FOUND if requested element not found in configuration
+*/
+esp_err_t app_config_getValue(const char* element, enum app_config_element_type_t type, void *value);
+
+/**
  * @brief      Sets configuration element's value
  *
  * Sets value of specified configuration's element depending on its type
