@@ -29,7 +29,10 @@ for topic in conf["topics"]:
     if not isStdTopic(topic):
         for elt in topic["elements"]:
             if elt["type"] == "boolean":
-                h_file.write("static bool\t" + elt["short_name"] + ";\n")
+                if elt.get("default"):
+                    h_file.write("static bool\t" + elt["short_name"] + " = true;\n")
+                else:
+                    h_file.write("static bool\t" + elt["short_name"] + ";\n")
             if elt["type"] == "array":
                 h_file.write("static char\t" + elt["short_name"] + "[" + str(elt["size"]) + "];\n")
             if elt["type"] == "string":
