@@ -32,6 +32,7 @@ inc_config_includes = '''#include "esp_log.h"
 #include "esp_ble_mesh_generic_model_api.h"
 #include "esp_ble_mesh_common_api.h"
 #include "app_config_ble_mesh.h"
+#include "esp_ble_mesh_sensor_model_api.h"
 
 #define TAG "APP_CONFIG_BLE_MESH"
 #define CID_ESP 0x02E5
@@ -60,6 +61,7 @@ inc_config_server_declaration = '''static esp_ble_mesh_cfg_srv_t ble_mesh_config
 };
 
 '''
+
 # On/Off server declaration
 inc_config_onoff_server_def = '''ESP_BLE_MESH_MODEL_PUB_DEFINE({1}, 2 + 3, ROLE_NODE);
 static esp_ble_mesh_gen_onoff_srv_t {0} = {{
@@ -70,6 +72,7 @@ static esp_ble_mesh_gen_onoff_srv_t {0} = {{
 '''
 
 inc_config_onoff_server_arr = 'ESP_BLE_MESH_MODEL_GEN_ONOFF_SRV(&{1}, &{0}),\n'
+inc_config_sensor_client_arr = 'ESP_BLE_MESH_MODEL_SENSOR_CLI(NULL, &{0}),\n'
 inc_config_config_server_arr = 'ESP_BLE_MESH_MODEL_CFG_SRV(&ble_mesh_config_server),\n'
 inc_config_server_elt = '\tESP_BLE_MESH_ELEMENT(0, {0}, {1}),\n'
 inc_config_element_array = '''static esp_ble_mesh_model_t {0}[] = {{
@@ -155,6 +158,7 @@ models_def = inc_config_server_declaration
 models_arrays = ""
 elements_array = inc_config_elements
 elements_models = ""
+clients_declarations = ""
 
 # Defining models
 element_num = 0
@@ -171,6 +175,10 @@ for element in conf["elements"]:
                 print ("Generic ON/OFF server found: {0}".format(model["short_name"]))
                 models_def         += inc_config_onoff_server_def.format(model["short_name"], model["short_name"] + "_pub")
                 element_sig_models += inc_config_onoff_server_arr.format(model["short_name"], model["short_name"] + "_pub")
+            if model["model"] == "generic_sensor_client":
+                print("Generic sensor client found: {0}".format(model["short_name"]))
+                models_def += "static esp_ble_mesh_client_t {0};\n".format(model["short_name"])
+                element_sig_models += inc_config_sensor_client_arr.format(model["short_name"])
             else:
                 print ("Unsupported model")
     element_sig_models_arr_name = "ble_mesh_element_" + str(element_num) + "_sig_models"
