@@ -50,8 +50,8 @@ void urldecode(char *dst, const char *src){
 }
 
 esp_err_t app_http_get_bool_value(char *string, char *name, bool *value){
-    ESP_LOGI(TAG, "Getting boolean value %s\n", name);
-    ESP_LOGI(TAG, "Allocating %d bytes\n", strlen(string));
+    ESP_LOGD(TAG, "Getting boolean value %s\n", name);
+    ESP_LOGD(TAG, "Allocating %d bytes\n", strlen(string));
     char *buf = malloc(strlen(string) + 1);
     if (!buf) {
         ESP_LOGE(TAG, "Error allocating buffer. Get bool failed.");
@@ -146,6 +146,7 @@ esp_err_t app_http_get_string_value(char *string, char *name, char *value){
 }
 
 esp_err_t get_conf_handler(httpd_req_t *req){
+    ESP_LOGI(TAG, "Sending JSON config");
     char *json_conf = app_config_toJSON();
     if (json_conf == NULL){
         httpd_resp_send_500(req);
@@ -158,13 +159,14 @@ esp_err_t get_conf_handler(httpd_req_t *req){
 }
 
 esp_err_t get_html_handler(httpd_req_t *req){
+    ESP_LOGI(TAG, "Replying HTML");
     httpd_resp_send(req, app_config_html, HTTPD_RESP_USE_STRLEN);
 	return ESP_OK;
 }
 
 esp_err_t post_conf_handler(httpd_req_t *req){
     ESP_LOGI(TAG, "Parsing new config");
-    ESP_LOGI(TAG, "Allocating %d bytes", sizeof(char)*req->content_len);
+    ESP_LOGD(TAG, "Allocating %d bytes", sizeof(char)*req->content_len);
     char *buf = malloc(sizeof(char)*req->content_len + 1);
     if(buf == NULL) {
         ESP_LOGE(TAG, "Error allocating buffer. Parsing POST request failed.");
@@ -188,12 +190,12 @@ esp_err_t post_conf_handler(httpd_req_t *req){
     /* Send a simple response */
     //const char resp[] = "URI POST Response";
     app_config_t *app_conf = app_config_get();
-    ESP_LOGW(TAG, "Topic number %d", app_conf->topics_number);
+    ESP_LOGD(TAG, "Topic number %d", app_conf->topics_number);
 	for (uint8_t i = 0; i < app_conf->topics_number; i++){
-        ESP_LOGW(TAG, "Topic %s, Elements number %d", app_conf->topics[i].short_name, app_conf->topics[i].elements_number);
+        ESP_LOGD(TAG, "Topic %s, Elements number %d", app_conf->topics[i].short_name, app_conf->topics[i].elements_number);
         for (uint8_t j = 0; j < app_conf->topics[i].elements_number; j++){
-            ESP_LOGW(TAG, "Number %d, j=%d", app_conf->topics[i].elements_number, j);
-            ESP_LOGI(TAG, "Looking for %s", app_conf->topics[i].elements[j].short_name);
+            ESP_LOGD(TAG, "Number %d, j=%d", app_conf->topics[i].elements_number, j);
+            ESP_LOGD(TAG, "Looking for %s", app_conf->topics[i].elements[j].short_name);
             if (app_conf->topics[i].elements[j].type == boolean){
                 bool tmp = false;
                 app_http_get_bool_value(buf, app_conf->topics[i].elements[j].short_name, &tmp);
@@ -224,14 +226,14 @@ esp_err_t post_conf_handler(httpd_req_t *req){
             } else if (app_conf->topics[i].elements[j].type == string){
                 char tmp[100];
                 app_http_get_string_value(buf, app_conf->topics[i].elements[j].short_name, tmp);
-                ESP_LOGI(TAG, "Got %s", tmp);
+                ESP_LOGD(TAG, "Got %s", tmp);
                 app_config_setValue(app_conf->topics[i].elements[j].short_name, tmp);
             } else {
 
             }
         }
 	}
-    ESP_LOGD(TAG, "Saving new configuration");
+    ESP_LOGI(TAG, "Saving new configuration");
     app_config_save();
     app_config_restart();
     httpd_resp_send(req, buf, HTTPD_RESP_USE_STRLEN);

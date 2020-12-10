@@ -11,6 +11,8 @@
 #include <stdbool.h>
 #include "esp_err.h"
 #include "sdkconfig.h"
+#include "esp_ble_mesh_generic_model_api.h"
+#include "mqtt_client.h"
 
 #define CONF_NVS_NAMESPACE	CONFIG_APP_CONFIG_NVS_NAMESPACE
 #define APP_CONFIG_MAX_SSID_LEN	32		// defined by WiFi standard
@@ -78,6 +80,11 @@ typedef struct {
 		APP_CONFIG_DEFINE_STRING(std_mqtt_user, "Username"), \
 		APP_CONFIG_DEFINE_STRING(std_mqtt_pass, "Password") };
 
+// Structure defining callbacks
+typedef struct {
+    esp_ble_mesh_generic_server_cb_t 	generic_srv;
+	esp_event_handler_t					mqtt;
+} app_config_cbs_t;
 
 /**
  * @brief      Initialize application configuration module
@@ -86,12 +93,16 @@ typedef struct {
  * 1. Initialize NVS storage
  * 2. Open NVS storage
  * 3. Load stored configuration in global static variable app_conf
- *
+ * After initialization finished various subsystem being started according element's values
+ * such as Bluetooth Mesh, MQTT etc.
+ * 
+ * @param[in]   cbs  pointer to structure containing callbacks
+ * 
  * @return
  *             - ESP_OK if configuration was initialized successfully
  *             - one of the error codes from the underlying flash storage driver
  */
-esp_err_t app_config_init();
+esp_err_t app_config_init(app_config_cbs_t *cbs);
 
 /**
  * @brief      Returns pointer to global configuration structure

@@ -135,7 +135,7 @@ inc_config_bt_init = '''esp_err_t bluetooth_init(void)
 }
 
 '''
-inc_config_init = '''esp_err_t app_config_ble_mesh_init(app_config_ble_mesh_cb_t *cbs)
+inc_config_init = '''esp_err_t app_config_ble_mesh_init(app_config_cbs_t *cbs)
 {
     esp_err_t err;
 

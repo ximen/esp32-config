@@ -16,6 +16,7 @@
 #include "app_config_wifi.h"
 #include "app_config_http.h"
 #include "app_config_ble_mesh.h"
+#include "app_config_mqtt.h"
 
 #define TAG "APP_CONFIG"
 static nvs_handle_t app_config_nvs_hanle;
@@ -27,7 +28,7 @@ app_config_t *app_config_get(){
 }
 
 esp_err_t app_config_load_element(app_config_element_t *element){
-	ESP_LOGI(TAG, "Loading element %s with size %d", element->short_name, element->size);
+	ESP_LOGD(TAG, "Loading element %s with size %d", element->short_name, element->size);
 	esp_err_t err = ESP_OK;
 	switch(element->type){
 	case boolean:		// Boolean storead as uint8_t
@@ -61,7 +62,7 @@ esp_err_t app_config_load_element(app_config_element_t *element){
 }
 
 esp_err_t app_config_load_topic(app_config_topic_t *topic){
-	ESP_LOGI(TAG, "Loading topic %s with %d elements", topic->short_name, topic->elements_number);
+	ESP_LOGD(TAG, "Loading topic %s with %d elements", topic->short_name, topic->elements_number);
 	for (uint8_t i = 0; i < topic->elements_number; i++){
 		esp_err_t err = app_config_load_element(&topic->elements[i]);
 		if(err) {
@@ -94,7 +95,7 @@ esp_err_t app_config_load(){
 }
 
 esp_err_t app_config_save_element(app_config_element_t *element){
-	ESP_LOGI(TAG, "Saving element %s with size %d", element->short_name, element->size);
+	ESP_LOGD(TAG, "Saving element %s with size %d", element->short_name, element->size);
 	esp_err_t err = ESP_OK;
 	switch(element->type){
 	case boolean:		// Boolean storead as uint8_t
@@ -104,7 +105,7 @@ esp_err_t app_config_save_element(app_config_element_t *element){
 		err = nvs_set_blob(app_config_nvs_hanle, element->short_name, element->value, element->size);
 		break;
 	case string:
-		ESP_LOGI(TAG,"Saving string %s, value %s", element->short_name, (char*)element->value);
+		ESP_LOGD(TAG,"Saving string %s, value %s", element->short_name, (char*)element->value);
 		err = nvs_set_str(app_config_nvs_hanle, element->short_name, element->value);
 		break;
 	case int8:
@@ -215,18 +216,18 @@ esp_err_t app_config_getBool(const char* element, bool *value){
 
 esp_err_t app_config_getArray(const char* element, char **value){
 	esp_err_t err = app_config_getValue(element, array, value);
-	ESP_LOGI(TAG, "Found: %s", *value);
+	ESP_LOGD(TAG, "Found: %s", *value);
 	return err;
 }
 
 esp_err_t app_config_getString(const char* element, char **value){
 	esp_err_t err = app_config_getValue(element, string, value);
-	ESP_LOGI(TAG, "Found: %s", *value);
+	ESP_LOGD(TAG, "Found: %s", *value);
 	return err;
 }
 
 
-esp_err_t app_config_init(app_config_ble_mesh_cb_t *ble_mesh_cb){
+esp_err_t app_config_init(app_config_cbs_t *cbs){
 	//Initializing default NVS partition
 	ESP_LOGI(TAG, "Initializing NVS");
 	esp_err_t err = nvs_flash_init();
@@ -264,8 +265,16 @@ esp_err_t app_config_init(app_config_ble_mesh_cb_t *ble_mesh_cb){
             ESP_LOGE(TAG, "bluetooth_init failed (err %d)", err);
             return ESP_FAIL;
         }
-		app_config_ble_mesh_init(ble_mesh_cb);
+		app_config_ble_mesh_init(cbs);
 	}
+	// Starting MQTT
+    bool config_mqtt_enable;
+    app_config_getBool("mqtt_enable", &config_mqtt_enable);
+    if(config_mqtt_enable){
+        ESP_LOGI(TAG, "MQTT enabled");
+		app_config_mqtt_init(cbs->mqtt);
+    }
+
 	return ESP_OK;
 }
 
