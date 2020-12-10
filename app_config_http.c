@@ -50,8 +50,9 @@ void urldecode(char *dst, const char *src){
 }
 
 esp_err_t app_http_get_bool_value(char *string, char *name, bool *value){
-    ESP_LOGD(TAG, "Getting boolean value %s\n", name);
-    char *buf = malloc(strlen(string));
+    ESP_LOGI(TAG, "Getting boolean value %s\n", name);
+    ESP_LOGI(TAG, "Allocating %d bytes\n", strlen(string));
+    char *buf = malloc(strlen(string) + 1);
     if (!buf) {
         ESP_LOGE(TAG, "Error allocating buffer. Get bool failed.");
         return ESP_ERR_NO_MEM;
@@ -84,7 +85,7 @@ esp_err_t app_http_get_bool_value(char *string, char *name, bool *value){
 
 esp_err_t app_http_get_int_value(char *string, char *name, int32_t *value){
     ESP_LOGD(TAG, "Getting int value %s\n", name);
-    char *buf = malloc(strlen(string));
+    char *buf = malloc(strlen(string) + 1);
     if (!buf) {
         ESP_LOGE(TAG, "Error allocating buffer. Get int failed.");
         return ESP_ERR_NO_MEM;
@@ -115,7 +116,7 @@ esp_err_t app_http_get_int_value(char *string, char *name, int32_t *value){
 
 esp_err_t app_http_get_string_value(char *string, char *name, char *value){
     ESP_LOGD(TAG, "Getting string value %s\n", name);
-    char *buf = malloc(strlen(string)+1);
+    char *buf = malloc(strlen(string) + 1);
     if (!buf) {
         ESP_LOGE(TAG, "Error allocating buffer. Get string failed.");
         return ESP_ERR_NO_MEM;
@@ -163,7 +164,8 @@ esp_err_t get_html_handler(httpd_req_t *req){
 
 esp_err_t post_conf_handler(httpd_req_t *req){
     ESP_LOGI(TAG, "Parsing new config");
-    char *buf = malloc(sizeof(char)*req->content_len);
+    ESP_LOGI(TAG, "Allocating %d bytes", sizeof(char)*req->content_len);
+    char *buf = malloc(sizeof(char)*req->content_len + 1);
     if(buf == NULL) {
         ESP_LOGE(TAG, "Error allocating buffer. Parsing POST request failed.");
         return ESP_ERR_NO_MEM;

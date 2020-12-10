@@ -135,7 +135,7 @@ inc_config_bt_init = '''esp_err_t bluetooth_init(void)
 }
 
 '''
-inc_config_init = '''esp_err_t app_config_ble_mesh_init()
+inc_config_init = '''esp_err_t app_config_ble_mesh_init(app_config_ble_mesh_cb_t *cbs)
 {
     esp_err_t err;
 
@@ -146,6 +146,9 @@ inc_config_init = '''esp_err_t app_config_ble_mesh_init()
     }
 
     esp_ble_mesh_node_prov_enable(ESP_BLE_MESH_PROV_ADV | ESP_BLE_MESH_PROV_GATT);
+
+    ESP_LOGI(TAG, "Setting mesh callbacks");
+    if (cbs->generic_srv) esp_ble_mesh_register_generic_server_callback(cbs->generic_srv);
 
     ESP_LOGI(TAG, "BLE Mesh Node initialized");
 

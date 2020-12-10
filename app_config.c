@@ -15,6 +15,7 @@
 #include "cJSON.h"
 #include "app_config_wifi.h"
 #include "app_config_http.h"
+#include "app_config_ble_mesh.h"
 
 #define TAG "APP_CONFIG"
 static nvs_handle_t app_config_nvs_hanle;
@@ -225,7 +226,7 @@ esp_err_t app_config_getString(const char* element, char **value){
 }
 
 
-esp_err_t app_config_init(){
+esp_err_t app_config_init(app_config_ble_mesh_cb_t *ble_mesh_cb){
 	//Initializing default NVS partition
 	ESP_LOGI(TAG, "Initializing NVS");
 	esp_err_t err = nvs_flash_init();
@@ -253,7 +254,18 @@ esp_err_t app_config_init(){
 		ESP_ERROR_CHECK(app_config_wifi_init());
 		ESP_ERROR_CHECK(app_config_http_init());
 	}
-
+	// Starting BLE Mesh
+	bool config_mesh_enable;
+    app_config_getBool("ble_mesh_enable", &config_mesh_enable);
+    if (config_mesh_enable){
+        ESP_LOGI(TAG, "BLE Mesh enabled");
+        esp_err_t err = bluetooth_init();
+        if (err) {
+            ESP_LOGE(TAG, "bluetooth_init failed (err %d)", err);
+            return ESP_FAIL;
+        }
+		app_config_ble_mesh_init(ble_mesh_cb);
+	}
 	return ESP_OK;
 }
 
