@@ -30,17 +30,20 @@ app_config_t *app_config_get(){
 esp_err_t app_config_load_element(app_config_element_t *element){
 	ESP_LOGD(TAG, "Loading element %s with size %d", element->short_name, element->size);
 	esp_err_t err = ESP_OK;
+	size_t tmp_size;
 	switch(element->type){
 	case boolean:		// Boolean storead as uint8_t
 		err = nvs_get_u8(app_config_nvs_hanle, element->short_name, element->value);
 		ESP_LOGD(TAG, "Got %d", *(uint8_t *)element->value);
 		break;
 	case array:
-		err = nvs_get_blob(app_config_nvs_hanle, element->short_name, element->value, &element->size);
+		tmp_size = element->size;
+		err = nvs_get_blob(app_config_nvs_hanle, element->short_name, element->value, &tmp_size);
 		ESP_LOGD(TAG, "Got %s", (char *)element->value);
 		break;
 	case string:
-		err = nvs_get_str(app_config_nvs_hanle, element->short_name, element->value, &element->size);
+		tmp_size = element->size;
+		err = nvs_get_str(app_config_nvs_hanle, element->short_name, element->value, &tmp_size);
 		ESP_LOGI(TAG, "Got %s", (char *)element->value);
 		break;
 	case int8:
@@ -176,7 +179,7 @@ esp_err_t app_config_getValue(const char* element, enum app_config_element_type_
 }
 
 esp_err_t app_config_setValue(const char* element, void *value){
-	ESP_LOGD(TAG, "Setting element: %s", element);
+	ESP_LOGI(TAG, "Setting element: %s", element);
 	app_config_element_t *elt = findElement(element);
 	if(elt != NULL){
 		switch (elt->type){
