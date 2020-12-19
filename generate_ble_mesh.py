@@ -136,14 +136,20 @@ inc_config_bt_init = '''esp_err_t bluetooth_init(void)
 
 '''
 inc_config_init = '''esp_err_t app_config_ble_mesh_init(app_config_cbs_t *cbs)
-{
+{{
     esp_err_t err;
 
     err = esp_ble_mesh_init(&ble_mesh_provision, &ble_mesh_composition);
-    if (err) {
+    if (err) {{
         ESP_LOGE(TAG, "Initializing mesh failed (err %d)", err);
         return err;
-    }
+    }}
+
+    ESP_LOGI(TAG, "Setting device name to {0}");
+    esp_ble_mesh_set_unprovisioned_device_name("{0}");
+    if (err != ESP_OK){{
+        ESP_LOGW(TAG, "Error setting device name! Error %d", err);
+    }}
 
     esp_ble_mesh_node_prov_enable(ESP_BLE_MESH_PROV_ADV | ESP_BLE_MESH_PROV_GATT);
 
@@ -153,7 +159,7 @@ inc_config_init = '''esp_err_t app_config_ble_mesh_init(app_config_cbs_t *cbs)
     ESP_LOGI(TAG, "BLE Mesh Node initialized");
 
     return err;
-}
+}}
 
 '''
 output = ""
@@ -198,6 +204,6 @@ output = inc_config_includes + \
     inc_config_composition + \
     inc_config_provision + \
     inc_config_bt_init + \
-    inc_config_init
+    inc_config_init.format(conf["device_name"])
     
 h_file.write(output)
