@@ -71,7 +71,17 @@ static esp_ble_mesh_gen_onoff_srv_t {0} = {{
 
 '''
 
+# Level server declaration
+inc_config_level_server_def = '''ESP_BLE_MESH_MODEL_PUB_DEFINE({1}, 2 + 3, ROLE_NODE);
+static esp_ble_mesh_gen_level_srv_t {0} = {{
+    .rsp_ctrl.get_auto_rsp = ESP_BLE_MESH_SERVER_AUTO_RSP,
+    .rsp_ctrl.set_auto_rsp = ESP_BLE_MESH_SERVER_AUTO_RSP,
+}};
+
+'''
+
 inc_config_onoff_server_arr = 'ESP_BLE_MESH_MODEL_GEN_ONOFF_SRV(&{1}, &{0}),\n'
+inc_config_level_server_arr = 'ESP_BLE_MESH_MODEL_GEN_LEVEL_SRV(&{1}, &{0}),\n'
 inc_config_sensor_client_arr = 'ESP_BLE_MESH_MODEL_SENSOR_CLI(NULL, &{0}),\n'
 inc_config_config_server_arr = 'ESP_BLE_MESH_MODEL_CFG_SRV(&ble_mesh_config_server),\n'
 inc_config_server_elt = '\tESP_BLE_MESH_ELEMENT(0, {0}, {1}),\n'
@@ -184,6 +194,10 @@ for element in conf["elements"]:
                 print ("Generic ON/OFF server found: {0}".format(model["short_name"]))
                 models_def         += inc_config_onoff_server_def.format(model["short_name"], model["short_name"] + "_pub")
                 element_sig_models += inc_config_onoff_server_arr.format(model["short_name"], model["short_name"] + "_pub")
+            if model["model"] == "generic_level_server":
+                print ("Generic Level server found: {0}".format(model["short_name"]))
+                models_def         += inc_config_level_server_def.format(model["short_name"], model["short_name"] + "_pub")
+                element_sig_models += inc_config_level_server_arr.format(model["short_name"], model["short_name"] + "_pub")
             if model["model"] == "generic_sensor_client":
                 print("Generic sensor client found: {0}".format(model["short_name"]))
                 models_def += "static esp_ble_mesh_client_t {0};\n".format(model["short_name"])
