@@ -26,4 +26,5 @@
  */
 esp_err_t app_config_mqtt_init(esp_event_handler_t handler);
 
+void app_config_mqtt_publish(char *topic, char *value);
 #endif /* APP_CONFIG_MQTT_H_ */

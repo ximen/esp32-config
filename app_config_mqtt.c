@@ -46,3 +46,7 @@ esp_err_t app_config_mqtt_init(esp_event_handler_t handler){
     }
     return ESP_OK;
 }
+
+void app_config_mqtt_publish(char *topic, char *value){
+    esp_mqtt_client_publish(mqtt_client, topic, value, 0, 1, 0);
+}
