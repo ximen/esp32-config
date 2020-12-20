@@ -194,11 +194,11 @@ for element in conf["elements"]:
                 print ("Generic ON/OFF server found: {0}".format(model["short_name"]))
                 models_def         += inc_config_onoff_server_def.format(model["short_name"], model["short_name"] + "_pub")
                 element_sig_models += inc_config_onoff_server_arr.format(model["short_name"], model["short_name"] + "_pub")
-            if model["model"] == "generic_level_server":
+            else if model["model"] == "generic_level_server":
                 print ("Generic Level server found: {0}".format(model["short_name"]))
                 models_def         += inc_config_level_server_def.format(model["short_name"], model["short_name"] + "_pub")
                 element_sig_models += inc_config_level_server_arr.format(model["short_name"], model["short_name"] + "_pub")
-            if model["model"] == "generic_sensor_client":
+            else if model["model"] == "generic_sensor_client":
                 print("Generic sensor client found: {0}".format(model["short_name"]))
                 models_def += "static esp_ble_mesh_client_t {0};\n".format(model["short_name"])
                 element_sig_models += inc_config_sensor_client_arr.format(model["short_name"])
