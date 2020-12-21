@@ -12,6 +12,7 @@
 #include "esp_err.h"
 #include "sdkconfig.h"
 #include "esp_ble_mesh_generic_model_api.h"
+#include "esp_ble_mesh_sensor_model_api.h"
 #include "mqtt_client.h"
 
 #define CONF_NVS_NAMESPACE	CONFIG_APP_CONFIG_NVS_NAMESPACE
@@ -83,6 +84,7 @@ typedef struct {
 // Structure defining callbacks
 typedef struct {
     esp_ble_mesh_generic_server_cb_t 	generic_srv;
+	esp_ble_mesh_sensor_client_cb_t		sensor_client;
 	esp_event_handler_t					mqtt;
 } app_config_cbs_t;
 

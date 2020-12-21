@@ -165,6 +165,7 @@ inc_config_init = '''esp_err_t app_config_ble_mesh_init(app_config_cbs_t *cbs)
 
     ESP_LOGI(TAG, "Setting mesh callbacks");
     if (cbs->generic_srv) esp_ble_mesh_register_generic_server_callback(cbs->generic_srv);
+    if (cbs->sensor_client) esp_ble_mesh_register_sensor_client_callback(cbs->sensor_client);
 
     ESP_LOGI(TAG, "BLE Mesh Node initialized");
 
@@ -194,11 +195,11 @@ for element in conf["elements"]:
                 print ("Generic ON/OFF server found: {0}".format(model["short_name"]))
                 models_def         += inc_config_onoff_server_def.format(model["short_name"], model["short_name"] + "_pub")
                 element_sig_models += inc_config_onoff_server_arr.format(model["short_name"], model["short_name"] + "_pub")
-            else if model["model"] == "generic_level_server":
+            elif model["model"] == "generic_level_server":
                 print ("Generic Level server found: {0}".format(model["short_name"]))
                 models_def         += inc_config_level_server_def.format(model["short_name"], model["short_name"] + "_pub")
                 element_sig_models += inc_config_level_server_arr.format(model["short_name"], model["short_name"] + "_pub")
-            else if model["model"] == "generic_sensor_client":
+            elif model["model"] == "generic_sensor_client":
                 print("Generic sensor client found: {0}".format(model["short_name"]))
                 models_def += "static esp_ble_mesh_client_t {0};\n".format(model["short_name"])
                 element_sig_models += inc_config_sensor_client_arr.format(model["short_name"])
