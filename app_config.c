@@ -250,7 +250,9 @@ esp_err_t app_config_init(app_config_cbs_t *cbs){
 	ESP_LOGI(TAG, "Loading configuration");
 	err = app_config_load();
 	if (err != ESP_OK) {
-		ESP_LOGE(TAG, "Error loading configuration (err %d)", err);
+		ESP_LOGE(TAG, "Error loading configuration (err %d). Saving current one.", err);
+		app_config_save();
+		app_config_restart();
 	}
 	// Starting WiFi
 	if (APP_CONFIG_STD_WIFI) {
