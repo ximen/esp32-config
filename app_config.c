@@ -17,6 +17,7 @@
 #include "app_config_http.h"
 #include "app_config_ble_mesh.h"
 #include "app_config_mqtt.h"
+#include "esp_ble_mesh_networking_api.h"
 
 #define TAG "APP_CONFIG"
 static nvs_handle_t app_config_nvs_hanle;
@@ -409,7 +410,13 @@ char *app_config_toJSON(){
 
 }
 
-esp_err_t app_config_restart(){
+void app_config_restart(){
 	esp_restart();
-	return ESP_OK;
+}
+
+void app_config_erase(){
+    esp_ble_mesh_node_local_reset();
+    nvs_erase_all(app_config_nvs_hanle);
+    nvs_commit(app_config_nvs_hanle);
+	app_config_restart();
 }

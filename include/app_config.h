@@ -203,7 +203,15 @@ esp_err_t app_config_setValue(const char* element, void *value);
  *             - one of error codes if fails
 */
 esp_err_t app_config_save();
-esp_err_t app_config_restart();
+void app_config_restart();
+
+/**
+ * @brief      Resets configuration
+ *
+ * Resets Ble mesh provisioning information, erases configuration data and restart MCU
+ *
+*/
+void app_config_erase();
 
 /**
  * @brief      Returns JSON representation of configuration
