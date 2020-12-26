@@ -13,6 +13,7 @@
 #include "sdkconfig.h"
 #include "esp_ble_mesh_generic_model_api.h"
 #include "esp_ble_mesh_sensor_model_api.h"
+#include "esp_ble_mesh_config_model_api.h"
 #include "mqtt_client.h"
 
 #define CONF_NVS_NAMESPACE	CONFIG_APP_CONFIG_NVS_NAMESPACE
