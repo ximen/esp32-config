@@ -83,6 +83,7 @@ typedef struct {
 
 // Structure defining callbacks
 typedef struct {
+	esp_ble_mesh_cfg_server_cb_t	 	config_srv;
     esp_ble_mesh_generic_server_cb_t 	generic_srv;
 	esp_ble_mesh_sensor_client_cb_t		sensor_client;
 	esp_event_handler_t					mqtt;
