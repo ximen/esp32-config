@@ -179,8 +179,25 @@ esp_err_t app_config_getValue(const char* element, enum app_config_element_type_
 	}
 }
 
+esp_err_t app_config_getSize(const char* element, size_t *value){
+	ESP_LOGD(TAG, "Getting size of %s", element);
+	app_config_element_t *elt = findElement(element);
+	if(elt != NULL){
+		if((elt->type == string)||(elt->type == array)){
+			*value = elt->size;
+		} else {
+			ESP_LOGD(TAG, "Not string nor array");
+			return ESP_ERR_INVALID_ARG;
+		}
+	} else {
+		ESP_LOGD(TAG, "Element not found");
+		return ESP_ERR_NOT_FOUND;
+	}
+	return ESP_OK;
+}
+
 esp_err_t app_config_setValue(const char* element, void *value){
-	ESP_LOGI(TAG, "Setting element: %s", element);
+	ESP_LOGD(TAG, "Setting element: %s", element);
 	app_config_element_t *elt = findElement(element);
 	if(elt != NULL){
 		switch (elt->type){
