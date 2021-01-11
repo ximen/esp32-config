@@ -14,7 +14,7 @@
 
 static esp_mqtt_client_handle_t mqtt_client;
 
-esp_err_t app_config_mqtt_init(esp_event_handler_t handler){
+esp_err_t app_config_mqtt_init(esp_event_handler_t handler, app_config_mqtt_lwt_t *lwt){
     if (!handler){
         ESP_LOGE(TAG, "MQTT handler is NULL. Aborting MQTT");
         return ESP_ERR_INVALID_ARG;
@@ -36,6 +36,12 @@ esp_err_t app_config_mqtt_init(esp_event_handler_t handler){
             esp_mqtt_client_config_t mqtt_cfg = {
                 .uri = mqtt_uri,
             };
+            if(lwt){
+                mqtt_cfg.lwt_topic = lwt->topic;
+                mqtt_cfg.lwt_msg = lwt->msg;
+                mqtt_cfg.lwt_retain = 1;
+                mqtt_cfg.lwt_qos = 1;
+            }
             mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
             esp_mqtt_client_register_event(mqtt_client, ESP_EVENT_ANY_ID, handler, mqtt_client);
             esp_mqtt_client_start(mqtt_client);
@@ -47,6 +53,6 @@ esp_err_t app_config_mqtt_init(esp_event_handler_t handler){
     return ESP_OK;
 }
 
-void app_config_mqtt_publish(char *topic, char *value){
-    esp_mqtt_client_publish(mqtt_client, topic, value, 0, 1, 0);
+void app_config_mqtt_publish(char *topic, char *value, bool retain){
+    esp_mqtt_client_publish(mqtt_client, topic, value, 0, 1, retain);
 }

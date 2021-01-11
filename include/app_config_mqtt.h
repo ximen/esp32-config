@@ -11,6 +11,11 @@
 #include "esp_err.h"
 #include "mqtt_client.h"
 
+typedef struct {
+    char *topic;
+    char *msg;
+} app_config_mqtt_lwt_t;
+
 /**
  * @brief      Starts MQTT subsystem
  *
@@ -24,7 +29,7 @@
  *             - ESP_ERR_INVALID_ARG if MQTT event hadler not specified
  *             - ESP_ERR_NOT_FOUND if broker string is empty
  */
-esp_err_t app_config_mqtt_init(esp_event_handler_t handler);
+esp_err_t app_config_mqtt_init(esp_event_handler_t handler, app_config_mqtt_lwt_t *lwt);
 
-void app_config_mqtt_publish(char *topic, char *value);
+void app_config_mqtt_publish(char *topic, char *value, bool retain);
 #endif /* APP_CONFIG_MQTT_H_ */

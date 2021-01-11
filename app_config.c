@@ -295,7 +295,7 @@ esp_err_t app_config_init(app_config_cbs_t *cbs){
     app_config_getBool("mqtt_enable", &config_mqtt_enable);
     if(config_mqtt_enable){
         ESP_LOGI(TAG, "MQTT enabled");
-		app_config_mqtt_init(cbs->mqtt);
+		app_config_mqtt_init(cbs->mqtt, &cbs->lwt);
     }
 
 	return ESP_OK;
