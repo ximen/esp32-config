@@ -5,15 +5,20 @@
  *      Author: ximen
  */
 
-#ifndef APP_CONFIG_H_
-#define APP_CONFIG_H_
+#pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <stdbool.h>
 #include "esp_err.h"
 #include "sdkconfig.h"
+#ifdef CONFIG_APP_CONFIG_BLUETOOTH_MESH
 #include "esp_ble_mesh_generic_model_api.h"
 #include "esp_ble_mesh_sensor_model_api.h"
 #include "esp_ble_mesh_config_model_api.h"
+#endif
 #include "mqtt_client.h"
 #include "app_config_mqtt.h"
 
@@ -85,9 +90,11 @@ typedef struct {
 
 // Structure defining callbacks
 typedef struct {
+#ifdef CONFIG_APP_CONFIG_BLUETOOTH_MESH	
 	esp_ble_mesh_cfg_server_cb_t	 	config_srv;
     esp_ble_mesh_generic_server_cb_t 	generic_srv;
 	esp_ble_mesh_sensor_client_cb_t		sensor_client;
+#endif
 	esp_event_handler_t					mqtt;
 	app_config_mqtt_lwt_t				lwt;
 } app_config_cbs_t;
@@ -242,4 +249,3 @@ void app_config_erase();
  */
 char *app_config_toJSON();
 
-#endif /* APP_CONFIG_H_ */

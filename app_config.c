@@ -15,9 +15,11 @@
 #include "cJSON.h"
 #include "app_config_wifi.h"
 #include "app_config_http.h"
+#ifdef CONFIG_APP_CONFIG_BLUETOOTH_MESH
 #include "app_config_ble_mesh.h"
-#include "app_config_mqtt.h"
 #include "esp_ble_mesh_networking_api.h"
+#endif
+#include "app_config_mqtt.h"
 
 #define TAG "APP_CONFIG"
 static nvs_handle_t app_config_nvs_hanle;
@@ -278,6 +280,7 @@ esp_err_t app_config_init(app_config_cbs_t *cbs){
 		ESP_ERROR_CHECK(app_config_wifi_init());
 		ESP_ERROR_CHECK(app_config_http_init());
 	}
+#ifdef CONFIG_APP_CONFIG_BLUETOOTH_MESH
 	// Starting BLE Mesh
 	bool config_mesh_enable;
     app_config_getBool("ble_mesh_enable", &config_mesh_enable);
@@ -290,6 +293,7 @@ esp_err_t app_config_init(app_config_cbs_t *cbs){
         }
 		app_config_ble_mesh_init(cbs);
 	}
+#endif
 	// Starting MQTT
     bool config_mqtt_enable;
     app_config_getBool("mqtt_enable", &config_mqtt_enable);
@@ -432,7 +436,9 @@ void app_config_restart(){
 }
 
 void app_config_erase(){
+#ifdef CONFIG_APP_CONFIG_BLUETOOTH_MESH
     esp_ble_mesh_node_local_reset();
+#endif
     nvs_erase_all(app_config_nvs_hanle);
     nvs_commit(app_config_nvs_hanle);
 	app_config_restart();

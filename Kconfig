@@ -1,84 +1,88 @@
-config APP_CONFIG_NVS_NAMESPACE
-    string "NVS configuration namespace"
-    default "configuration"
-    help
-        Sets NVS namespace for storing configuration data.
+menu "ESP32-Config"
 
-config APP_CONFIG_FILE_NAME
-    string "Configuration filename"
-    default "conf.json"
-    help
-        Filename of JSON file containing configuration declaration.
+    config APP_CONFIG_NVS_NAMESPACE
+        string "NVS configuration namespace"
+        default "configuration"
+        help
+            Sets NVS namespace for storing configuration data.
 
-config APP_CONFIG_ELT_NAME_LEN
-    int "Name length"
-    default 32
-    help
-        Maximum element's or topic's name length.
+    config APP_CONFIG_FILE_NAME
+        string "Configuration filename"
+        default "conf.json"
+        help
+            Filename of JSON file containing configuration declaration.
 
-config APP_CONFIG_SHORT_NAME_LEN
-    int "Short name length"
-    default 32
-    help
-        Maximum element's or topic's short name length.
+    config APP_CONFIG_ELT_NAME_LEN
+        int "Name length"
+        default 32
+        help
+            Maximum element's or topic's name length.
 
-config APP_CONFIG_MQTT_BROKER_LEN
-    int "Broker length"
-    default 32
-    help
-        Maximum MQTT broker's address length.
+    config APP_CONFIG_SHORT_NAME_LEN
+        int "Short name length"
+        default 32
+        help
+            Maximum element's or topic's short name length.
 
-config APP_CONFIG_MQTT_USER_LEN
-    int "MQTT username length"
-    default 32
-    help
-        Maximum username lenght for MQTT auth.
+    config APP_CONFIG_MQTT_BROKER_LEN
+        int "Broker length"
+        default 32
+        help
+            Maximum MQTT broker's address length.
 
-config APP_CONFIG_MQTT_PASS_LEN
-    int "MQTT password length"
-    default 32
-    help
-        Maximum password lenght for MQTT auth.
+    config APP_CONFIG_MQTT_USER_LEN
+        int "MQTT username length"
+        default 32
+        help
+            Maximum username lenght for MQTT auth.
 
-config APP_CONFIG_CSS_FILE
-    string "CSS filename"
-    default "main.css"
-    help
-        Filename of CSS file for configuration page.    
+    config APP_CONFIG_MQTT_PASS_LEN
+        int "MQTT password length"
+        default 32
+        help
+            Maximum password lenght for MQTT auth.
 
-config APP_CONFIG_REST_PATH
-    string "Path for REST config"
-    default "/config"
-    help
-        HTTP path for JSON config.
+    config APP_CONFIG_CSS_FILE
+        string "CSS filename"
+        default "main.css"
+        help
+            Filename of CSS file for configuration page.    
 
-config APP_CONFIG_HTML_GET_PATH
-    string "Configuration page path"
-    default "/"
-    help
-        HTTP path for configuration HTML page.
+    config APP_CONFIG_REST_PATH
+        string "Path for REST config"
+        default "/config"
+        help
+            HTTP path for JSON config.
 
-config APP_CONFIG_HTML_SET_PATH
-    string "Configuration set path"
-    default "/set"
-    help
-        HTTP path for setting configuration data
+    config APP_CONFIG_HTML_GET_PATH
+        string "Configuration page path"
+        default "/"
+        help
+            HTTP path for configuration HTML page.
 
-config APP_CONFIG_MINIMIZE_HTML
-    bool "Minimize HTML"
-    default y
-    help
-        Try to create more compact HTML.
+    config APP_CONFIG_HTML_SET_PATH
+        string "Configuration set path"
+        default "/set"
+        help
+            HTTP path for setting configuration data
 
-config APP_CONFIG_BLUETOOTH_MESH
-    bool "Bluetooth Mesh support"
-    default n
-    help
-        Generate code for Bluetooth Mesh elements.
+    config APP_CONFIG_MINIMIZE_HTML
+        bool "Minimize HTML"
+        default y
+        help
+            Try to create more compact HTML.
 
-config APP_CONFIG_BLE_MESH_FILE_NAME
-    string "BLE Mesh configuration filename"
-    default "conf_ble_mesh.json"
-    help
-        Filename of JSON file containing declaration for Bluetooth Mesh functions.
-                
+    config APP_CONFIG_BLUETOOTH_MESH
+        bool "Bluetooth Mesh support"
+        default n
+        help
+            Generate code for Bluetooth Mesh elements.
+
+    config APP_CONFIG_BLE_MESH_FILE_NAME
+        string "BLE Mesh configuration filename"
+        default "conf_ble_mesh.json"
+        depends on APP_CONFIG_BLUETOOTH_MESH
+        help
+            Filename of JSON file containing declaration for Bluetooth Mesh functions.
+                    
+endmenu # ESP32-Config

@@ -6,6 +6,7 @@
  */
 
 #include "esp_err.h"
+#include "esp_log.h"
 #include "app_config_mqtt.h"
 #include "app_config.h"
 #include "mqtt_client.h"
