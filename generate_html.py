@@ -172,6 +172,7 @@ for topic in conf["topics"]:
         for elt in topic["elements"]:
             if elt.get("depends_on"):
                 deps_script += '"{0}": "{1}",\n'.format(elt["short_name"], elt["depends_on"])
+                deps_script += '"{0}_label": "{1}",\n'.format(elt["short_name"], elt["depends_on"])
 deps_script += "}\n"
 
 # Elements inside tabs
@@ -181,7 +182,7 @@ for topic in conf["topics"]:
         html += '<fieldset class="table">\n'
         for elt in topic["elements"]:
             html += '<div class="tr">\n'
-            html += '\t\t\t<div class="td right">{0}</div>\n'.format(elt["name"])
+            html += '\t\t\t<div class="td right" name="{1}_label">{0}</div>\n'.format(elt["name"], elt["short_name"])
             if elt["type"] == "boolean":
                 html += '\t\t\t<div class="td"><input type="checkbox" name="{0}"></div>\n'.format(elt["short_name"])
             if elt["type"] == "array":
