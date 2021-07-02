@@ -160,7 +160,7 @@ esp_err_t get_conf_handler(httpd_req_t *req){
 
 esp_err_t get_html_handler(httpd_req_t *req){
     ESP_LOGI(TAG, "Replying HTML");
-    httpd_resp_send(req, app_config_html, HTTPD_RESP_USE_STRLEN);
+    httpd_resp_send(req, app_config_html, app_config_html_len);
 	return ESP_OK;
 }
 
