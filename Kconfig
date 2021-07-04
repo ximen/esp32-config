@@ -98,6 +98,11 @@ menu "ESP32-Config"
             help
                 Maximum lenght for object ID part in MQTT topic.
 
+        config APP_CONFIG_MQTT_MAX_TOPIC_SUB
+            int "Max subscriptions number"
+            default 50
+            help
+                Maximum number of topic subscriptions for application
     endmenu # "MQTT options"
 
 endmenu # ESP32-Config
