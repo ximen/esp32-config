@@ -13,6 +13,22 @@
 
 #define APP_CONFIG_WIFI_MAXIMUM_RETRIES 4
 
+typedef struct app_config_wifi_cb_arg app_config_wifi_cb_arg_t;
+typedef struct app_config_ip_cb_arg app_config_ip_cb_arg_t;
+
+typedef void(*app_config_wifi_cb_t)(wifi_event_t event, void *event_data);
+typedef void(*app_config_ip_cb_t)(ip_event_t event, void *event_data);
+
+struct app_config_wifi_cb_arg{
+    wifi_event_t            event;
+    app_config_wifi_cb_t    cb;
+};
+
+struct app_config_ip_cb_arg{
+    ip_event_t              event;
+    app_config_ip_cb_t      cb;
+};
+
 /**
  * @brief      Initialize and start WiFi with app_config configuration
  *
@@ -47,5 +63,8 @@ esp_err_t app_config_ap_start();
  *             - one of the error codes from in case of error
  */
 esp_err_t app_config_sta_start();
+
+esp_err_t app_config_wifi_register_cb(wifi_event_t event, app_config_wifi_cb_t cb);
+esp_err_t app_config_ip_register_cb(ip_event_t event, app_config_ip_cb_t cb);
 
 #endif /* MAIN_APP_CONFIG_WIFI_H_ */

@@ -22,6 +22,41 @@
 
 static EventGroupHandle_t	s_wifi_event_group;
 static int s_retry_num = 0;
+static app_config_wifi_cb_arg_t wifi_cbs[] = {
+	{WIFI_EVENT_WIFI_READY, NULL},
+	{WIFI_EVENT_SCAN_DONE, NULL},
+	{WIFI_EVENT_STA_START, NULL},
+	{WIFI_EVENT_STA_STOP, NULL},
+	{WIFI_EVENT_STA_CONNECTED, NULL},
+	{WIFI_EVENT_STA_DISCONNECTED, NULL},
+	{WIFI_EVENT_STA_AUTHMODE_CHANGE, NULL},
+	{WIFI_EVENT_STA_WPS_ER_SUCCESS, NULL},
+	{WIFI_EVENT_STA_WPS_ER_FAILED, NULL},
+	{WIFI_EVENT_STA_WPS_ER_TIMEOUT, NULL},
+	{WIFI_EVENT_STA_WPS_ER_PIN, NULL},
+	{WIFI_EVENT_AP_START, NULL},
+	{WIFI_EVENT_AP_STOP, NULL},
+	{WIFI_EVENT_AP_STACONNECTED, NULL},
+	{WIFI_EVENT_AP_STADISCONNECTED, NULL},
+	{WIFI_EVENT_AP_PROBEREQRECVED, NULL}
+};
+static app_config_ip_cb_arg_t ip_cbs[] = {
+	{IP_EVENT_STA_GOT_IP, NULL},
+	{IP_EVENT_STA_LOST_IP, NULL},
+	{IP_EVENT_AP_STAIPASSIGNED, NULL},
+	{IP_EVENT_GOT_IP6, NULL},
+	{IP_EVENT_ETH_GOT_IP, NULL}
+};
+
+void run_wifi_cb(wifi_event_t event, void *event_data){
+	for(uint8_t i = 0; i < SIZEOF(wifi_cbs); i++)
+		if(wifi_cbs[i].event == event && wifi_cbs[i].cb) wifi_cbs[i].cb(event, event_data);
+}
+
+void run_ip_cb(ip_event_t event, void *event_data){
+	for(uint8_t i = 0; i < SIZEOF(ip_cbs); i++)
+		if(ip_cbs[i].event == event && ip_cbs[i].cb) ip_cbs[i].cb(event, event_data);
+}
 
 void wifi_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data){
 	if (event_base == WIFI_EVENT){
@@ -52,12 +87,14 @@ void wifi_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void
 			default:
 			break;
 		}
+		run_wifi_cb(event_id, event_data);
 	} else if (event_base == IP_EVENT){
 		if (event_id == IP_EVENT_STA_GOT_IP){
 			ESP_LOGI(TAG, "Got ip: %s", ip4addr_ntoa((ip4_addr_t *)&((ip_event_got_ip_t *)event_data)->ip_info.ip));
 			s_retry_num = 0;
 			xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
 		}
+		run_ip_cb(event_id, event_data);
 	}
 }
 
@@ -127,4 +164,24 @@ esp_err_t app_config_wifi_init(){
 	if (ap)	app_config_wifi_init_ap();
 	else app_config_wifi_init_sta();
 	return ESP_OK;
+}
+
+esp_err_t app_config_wifi_register_cb(wifi_event_t event, app_config_wifi_cb_t cb){
+	for(uint8_t i = 0; i < SIZEOF(wifi_cbs); i++){
+		if(wifi_cbs[i].event == event){
+			wifi_cbs[i].cb = cb;
+			return ESP_OK;
+		}
+	}
+	return ESP_ERR_NOT_FOUND;
+}
+
+esp_err_t app_config_ip_register_cb(ip_event_t event, app_config_ip_cb_t cb){
+	for(uint8_t i = 0; i < SIZEOF(ip_cbs); i++){
+		if(ip_cbs[i].event == event){
+			ip_cbs[i].cb = cb;
+			return ESP_OK;
+		}
+	}
+	return ESP_ERR_NOT_FOUND;
 }
