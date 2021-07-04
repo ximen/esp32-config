@@ -1,4 +1,4 @@
-set(srcs "app_config.c" "app_config_wifi.c" "app_config_http.c" "app_config_mqtt.c")
+set(srcs "app_config.c" "app_config_wifi.c" "app_config_http.c" "app_config_mqtt.c" "app_config_mqtt_switch.c")
 set(reqs nvs_flash esp_http_server json bt mqtt)
 
 if(CONFIG_APP_CONFIG_BLUETOOTH_MESH)

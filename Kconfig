@@ -103,6 +103,34 @@ menu "ESP32-Config"
             default 50
             help
                 Maximum number of topic subscriptions for application
+        
+        menu "MQTT Switch"
+            config APP_CONFIG_MQTT_SWITCH_STATE_STR
+                string "MQTT switch state topic suffix"
+                default ""
+                help
+                    Default suffix string to create MQTT switch's state topic string
+            config APP_CONFIG_MQTT_SWITCH_CMD_STR
+                string "MQTT switch command topic suffix"
+                default "/set"
+                help
+                    Default suffix string to create MQTT switch's command topic string
+            config APP_CONFIG_MQTT_SWITCH_AVAIL_STR
+                string "MQTT switch availability topic suffix"
+                default "/available"
+                help
+                    Default suffix string to create MQTT switch's availability topic string
+            config APP_CONFIG_MQTT_SWITCH_ON_STR
+                string "MQTT switch's ON payload"
+                default "ON"
+                help
+                    Default string for MQTT switch's ON-state payload
+            config APP_CONFIG_MQTT_SWITCH_OFF_STR
+                string "MQTT switch's OFF payload"
+                default "OFF"
+                help
+                    Default string for MQTT switch's OFF-state payload
+        endmenu # MQTT Switch
     endmenu # "MQTT options"
 
 endmenu # ESP32-Config
