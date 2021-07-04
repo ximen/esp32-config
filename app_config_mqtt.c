@@ -160,7 +160,7 @@ esp_err_t app_config_mqtt_unsubscribe(char *topic, app_config_mqtt_handler_t han
     return(ESP_ERR_NOT_FOUND);
 }
 
-esp_err_t app_config_mqtt_register_callback(esp_mqtt_event_id_t event, app_config_mqtt_event_handler_t handler){
+esp_err_t app_config_mqtt_register_cb(esp_mqtt_event_id_t event, app_config_mqtt_event_handler_t handler){
     ESP_LOGD(TAG, "Registering callback to event %d", event);
     for (uint8_t i = 0; i < SIZEOF(event_subscriptions); i++){
         if(event_subscriptions[i].event == event){
@@ -171,7 +171,7 @@ esp_err_t app_config_mqtt_register_callback(esp_mqtt_event_id_t event, app_confi
     return(ESP_ERR_NOT_FOUND);
 }
 
-esp_err_t app_config_mqtt_unregister_callback(esp_mqtt_event_id_t event){
+esp_err_t app_config_mqtt_unregister_cb(esp_mqtt_event_id_t event){
     ESP_LOGD(TAG, "Unregistering callback from event %d", event);
     for (uint8_t i = 0; i < SIZEOF(event_subscriptions); i++){
         if(event_subscriptions[i].event == event){

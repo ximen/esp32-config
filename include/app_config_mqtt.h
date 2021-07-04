@@ -52,7 +52,7 @@ void app_config_mqtt_publish(char *topic, char *value, bool retain);
 
 esp_err_t app_config_mqtt_subscribe(const char *topic, app_config_mqtt_handler_t handler, void *user_data);
 esp_err_t app_config_mqtt_unsubscribe(char *topic, app_config_mqtt_handler_t handler);
-esp_err_t app_config_mqtt_register_callback(esp_mqtt_event_id_t event, app_config_mqtt_event_handler_t handler);
-esp_err_t app_config_mqtt_unregister_callback(esp_mqtt_event_id_t event);
+esp_err_t app_config_mqtt_register_cb(esp_mqtt_event_id_t event, app_config_mqtt_event_handler_t handler);
+esp_err_t app_config_mqtt_unregister_cb(esp_mqtt_event_id_t event);
 
 #endif /* APP_CONFIG_MQTT_H_ */
