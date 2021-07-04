@@ -13,12 +13,13 @@
 
 #define SIZEOF(arr)     sizeof(arr)/sizeof(arr[0])
 
-typedef void(*app_config_mqtt_handler_t)(char *topic, int topic_len, char *data, int data_len);
+typedef void(*app_config_mqtt_handler_t)(char *topic, int topic_len, char *data, int data_len, void *user_data);
 typedef void(*app_config_mqtt_event_handler_t)(esp_mqtt_event_handle_t event);
 
 typedef struct {
     const char                  *topic;
     app_config_mqtt_handler_t   handler;
+    void                        *user_data;
 } app_config_mqtt_topic_sub_t;
 
 typedef struct {
@@ -48,8 +49,10 @@ typedef struct {
 esp_err_t app_config_mqtt_init(app_config_mqtt_lwt_t *lwt);
 
 void app_config_mqtt_publish(char *topic, char *value, bool retain);
-esp_err_t app_config_mqtt_subscribe(const char *topic, app_config_mqtt_handler_t handler);
+
+esp_err_t app_config_mqtt_subscribe(const char *topic, app_config_mqtt_handler_t handler, void *user_data);
 esp_err_t app_config_mqtt_unsubscribe(char *topic, app_config_mqtt_handler_t handler);
 esp_err_t app_config_mqtt_register_callback(esp_mqtt_event_id_t event, app_config_mqtt_event_handler_t handler);
 esp_err_t app_config_mqtt_unregister_callback(esp_mqtt_event_id_t event);
+
 #endif /* APP_CONFIG_MQTT_H_ */

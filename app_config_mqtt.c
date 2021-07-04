@@ -51,7 +51,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         ESP_LOGD(TAG, "MQTT_EVENT_DATA");
         for (uint8_t i = 0; i < SIZEOF(topic_subscriptions); i++){
             if(!strncmp(topic_subscriptions[i].topic, event->topic, event->topic_len) && topic_subscriptions[i].handler){
-                topic_subscriptions[i].handler(event->topic, event->topic_len, event->data, event->data_len);
+                topic_subscriptions[i].handler(event->topic, event->topic_len, event->data, event->data_len, topic_subscriptions[i].user_data);
             }
         }
         break;
@@ -109,7 +109,7 @@ void app_config_mqtt_publish(char *topic, char *value, bool retain){
     esp_mqtt_client_publish(mqtt_client, topic, value, 0, 1, retain);
 }
 
-esp_err_t app_config_mqtt_subscribe(const char *topic, app_config_mqtt_handler_t handler){
+esp_err_t app_config_mqtt_subscribe(const char *topic, app_config_mqtt_handler_t handler, void *user_data){
     if(!handler) {
         ESP_LOGE(TAG, "Empty subscription handler!");
         return(ESP_ERR_INVALID_ARG);
@@ -118,6 +118,7 @@ esp_err_t app_config_mqtt_subscribe(const char *topic, app_config_mqtt_handler_t
         if(!topic_subscriptions[i].topic){
             topic_subscriptions[i].topic = topic;
             topic_subscriptions[i].handler = handler;
+            topic_subscriptions[i].user_data = user_data;
             return(ESP_OK);
         }
     }
@@ -131,6 +132,7 @@ esp_err_t app_config_mqtt_unsubscribe(char *topic, app_config_mqtt_handler_t han
             if(topic_subscriptions[i].handler == handler){
                 topic_subscriptions[i].topic = NULL;
                 topic_subscriptions[i].handler = NULL;
+                topic_subscriptions[i].user_data = NULL;
             }
         }
         return(ESP_OK);
@@ -141,6 +143,7 @@ esp_err_t app_config_mqtt_unsubscribe(char *topic, app_config_mqtt_handler_t han
             if(!strcmp(topic_subscriptions[i].topic, topic)){
                 topic_subscriptions[i].topic = NULL;
                 topic_subscriptions[i].handler = NULL;
+                topic_subscriptions[i].user_data = NULL;
             }
         }
         return(ESP_OK);
@@ -150,6 +153,7 @@ esp_err_t app_config_mqtt_unsubscribe(char *topic, app_config_mqtt_handler_t han
         if(!strcmp(topic_subscriptions[i].topic, topic) && (topic_subscriptions[i].handler == handler)){
             topic_subscriptions[i].topic = NULL;
             topic_subscriptions[i].handler = NULL;
+            topic_subscriptions[i].user_data = NULL;
             return(ESP_OK);
         }
     }
