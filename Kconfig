@@ -24,24 +24,6 @@ menu "ESP32-Config"
         help
             Maximum element's or topic's short name length.
 
-    config APP_CONFIG_MQTT_BROKER_LEN
-        int "Broker length"
-        default 32
-        help
-            Maximum MQTT broker's address length.
-
-    config APP_CONFIG_MQTT_USER_LEN
-        int "MQTT username length"
-        default 32
-        help
-            Maximum username lenght for MQTT auth.
-
-    config APP_CONFIG_MQTT_PASS_LEN
-        int "MQTT password length"
-        default 32
-        help
-            Maximum password lenght for MQTT auth.
-
     config APP_CONFIG_CSS_FILE
         string "CSS filename"
         default "main.css"
@@ -84,5 +66,38 @@ menu "ESP32-Config"
         depends on APP_CONFIG_BLUETOOTH_MESH
         help
             Filename of JSON file containing declaration for Bluetooth Mesh functions.
-                    
+    
+    menu "MQTT options"
+        config APP_CONFIG_MQTT_BROKER_LEN
+            int "Broker length"
+            default 32
+            help
+                Maximum MQTT broker's address length.
+    
+        config APP_CONFIG_MQTT_USER_LEN
+            int "MQTT username length"
+            default 32
+            help
+                Maximum username lenght for MQTT auth.
+    
+        config APP_CONFIG_MQTT_PASS_LEN
+            int "MQTT password length"
+            default 32
+            help
+                Maximum password lenght for MQTT auth.
+        
+        config APP_CONFIG_MQTT_PREFIX_LEN
+            int "MQTT prefix length"
+            default 32
+            help
+                Maximum lenght for MQTT topic's prefix.
+
+        config APP_CONFIG_MQTT_OBJID_LEN
+            int "MQTT object ID length"
+            default 32
+            help
+                Maximum lenght for object ID part in MQTT topic.
+
+    endmenu # "MQTT options"
+
 endmenu # ESP32-Config

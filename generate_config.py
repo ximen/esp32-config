@@ -62,7 +62,10 @@ for topic in conf["topics"]:
         h_file.write("APP_CONFIG_DEFINE_STD_WIFI(\"" + topic["name"] + "\", \"" + topic["default_ssid"] + "\", \"" + topic["default_psk"] + "\")\n")
     elif topic.get("std_mqtt") == True:
         h_file.write("\n#define\t\tAPP_CONFIG_STD_MQTT\t1\n")
-        h_file.write("APP_CONFIG_DEFINE_STD_MQTT(\"" + topic["name"] + "\", 1883)\n")
+        if topic.get("discovery"):
+            h_file.write("APP_CONFIG_DEFINE_STD_MQTT(\"" + topic["name"] + "\", 1883, true)\n")
+        else:
+            h_file.write("APP_CONFIG_DEFINE_STD_MQTT(\"" + topic["name"] + "\", 1883, false)\n")
     else:
         h_file.write("\nstatic app_config_element_t config_" + topic["short_name"] + "_elements[] = {\n")
         for elt in topic["elements"]:

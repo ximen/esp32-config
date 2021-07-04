@@ -77,16 +77,22 @@ typedef struct {
 		APP_CONFIG_DEFINE_BOOL(std_wifi_ap, "Access point"), \
 		APP_CONFIG_DEFINE_STRING(std_wifi_ssid, "SSID"), \
 		APP_CONFIG_DEFINE_STRING(std_wifi_psk, "PSK") };
-#define APP_CONFIG_DEFINE_STD_MQTT(_name, _def_port) \
+#define APP_CONFIG_DEFINE_STD_MQTT(_name, _def_port, _disc) \
 		static char	std_mqtt_broker[CONFIG_APP_CONFIG_MQTT_BROKER_LEN]; \
 		static uint16_t	std_mqtt_port = _def_port; \
 		static char	std_mqtt_user[CONFIG_APP_CONFIG_MQTT_USER_LEN]; \
 		static char	std_mqtt_pass[CONFIG_APP_CONFIG_MQTT_PASS_LEN]; \
+		static char std_mqtt_prefix[CONFIG_APP_CONFIG_MQTT_PREFIX_LEN] = "homeassistant"; \
+		static char std_mqtt_objid[CONFIG_APP_CONFIG_MQTT_OBJID_LEN] = "esp"; \
+		static bool std_mqtt_disc = _disc; \
 		static app_config_element_t config_std_mqtt_elements[] = { \
 		APP_CONFIG_DEFINE_STRING(std_mqtt_broker, "Broker"), \
 		APP_CONFIG_DEFINE_INT16(std_mqtt_port, "Port"), \
 		APP_CONFIG_DEFINE_STRING(std_mqtt_user, "Username"), \
-		APP_CONFIG_DEFINE_STRING(std_mqtt_pass, "Password") };
+		APP_CONFIG_DEFINE_STRING(std_mqtt_pass, "Password"), \
+		APP_CONFIG_DEFINE_STRING(std_mqtt_prefix, "Prefix"), \
+		APP_CONFIG_DEFINE_STRING(std_mqtt_objid, "Object ID"), \
+		APP_CONFIG_DEFINE_BOOL(std_mqtt_disc, "Discovery")};
 
 // Structure defining callbacks
 typedef struct {
