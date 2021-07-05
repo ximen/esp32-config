@@ -21,5 +21,6 @@ struct app_config_mqtt_switch{
 };
 
 app_config_mqtt_switch_t *app_config_mqtt_switch_create(char *prefix, char *obj_id, char *name, app_config_mqtt_switch_handler_t cmd_handler, bool discovery);
-esp_err_t app_config_mqtt_switch_set(uint8_t state);
+void app_config_mqtt_switch_set(uint8_t state, app_config_mqtt_switch_t *sw);
 esp_err_t app_config_mqtt_switch_delete(app_config_mqtt_switch_t *sw);
+void app_config_mqtt_switch_publish(app_config_mqtt_switch_t *sw);

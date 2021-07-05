@@ -50,8 +50,10 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     case MQTT_EVENT_DATA:
         ESP_LOGD(TAG, "MQTT_EVENT_DATA");
         for (uint8_t i = 0; i < SIZEOF(topic_subscriptions); i++){
-            if(!strncmp(topic_subscriptions[i].topic, event->topic, event->topic_len) && topic_subscriptions[i].handler){
-                topic_subscriptions[i].handler(event->topic, event->topic_len, event->data, event->data_len, topic_subscriptions[i].user_data);
+            if(topic_subscriptions[i].topic && topic_subscriptions[i].handler){
+                if(!strncmp(topic_subscriptions[i].topic, event->topic, event->topic_len)){
+                    topic_subscriptions[i].handler(event->topic, event->topic_len, event->data, event->data_len, topic_subscriptions[i].user_data);
+                }
             }
         }
         break;
@@ -114,11 +116,13 @@ esp_err_t app_config_mqtt_subscribe(const char *topic, app_config_mqtt_handler_t
         ESP_LOGE(TAG, "Empty subscription handler!");
         return(ESP_ERR_INVALID_ARG);
     }
+    ESP_LOGI(TAG, "Subscribing to %s", topic);
     for (uint8_t i = 0; i < SIZEOF(topic_subscriptions); i++){
         if(!topic_subscriptions[i].topic){
             topic_subscriptions[i].topic = topic;
             topic_subscriptions[i].handler = handler;
             topic_subscriptions[i].user_data = user_data;
+            esp_mqtt_client_subscribe(mqtt_client, topic, 0);
             return(ESP_OK);
         }
     }
