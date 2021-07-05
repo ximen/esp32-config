@@ -18,9 +18,10 @@ struct app_config_mqtt_switch{
     uint8_t                             qos;
     uint8_t                             retain;
     app_config_mqtt_switch_handler_t    cmd_handler;
+    void                                *user_data;
 };
 
-app_config_mqtt_switch_t *app_config_mqtt_switch_create(char *prefix, char *obj_id, char *name, app_config_mqtt_switch_handler_t cmd_handler, bool discovery);
+app_config_mqtt_switch_t *app_config_mqtt_switch_create(char *prefix, char *obj_id, char *name, app_config_mqtt_switch_handler_t cmd_handler, bool discovery, void *user_data);
 void app_config_mqtt_switch_set(uint8_t state, app_config_mqtt_switch_t *sw);
 esp_err_t app_config_mqtt_switch_delete(app_config_mqtt_switch_t *sw);
 void app_config_mqtt_switch_publish(app_config_mqtt_switch_t *sw);
