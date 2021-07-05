@@ -101,7 +101,6 @@ typedef struct {
     esp_ble_mesh_generic_server_cb_t 	generic_srv;
 	esp_ble_mesh_sensor_client_cb_t		sensor_client;
 #endif
-	app_config_mqtt_lwt_t				lwt;
 } app_config_cbs_t;
 
 /**

@@ -85,7 +85,7 @@ esp_err_t app_config_mqtt_init(app_config_mqtt_lwt_t *lwt){
             err = app_config_getValue("std_mqtt_port", int16, &port);
             if (err != ESP_OK) port = 1883;
             sprintf(mqtt_uri, "mqtt://%s:%d", mqtt_broker, (uint16_t)port);
-            ESP_LOGI(TAG, "MQTT connect string %s", mqtt_uri);
+            ESP_LOGD(TAG, "MQTT connect string %s", mqtt_uri);
             esp_mqtt_client_config_t mqtt_cfg = {
                 .uri = mqtt_uri,
             };
@@ -116,7 +116,7 @@ esp_err_t app_config_mqtt_subscribe(const char *topic, app_config_mqtt_handler_t
         ESP_LOGE(TAG, "Empty subscription handler!");
         return(ESP_ERR_INVALID_ARG);
     }
-    ESP_LOGI(TAG, "Subscribing to %s", topic);
+    ESP_LOGD(TAG, "Subscribing to %s", topic);
     for (uint8_t i = 0; i < SIZEOF(topic_subscriptions); i++){
         if(!topic_subscriptions[i].topic){
             topic_subscriptions[i].topic = topic;
