@@ -22,9 +22,10 @@ void app_config_mqtt_switch_handler(char *topic, int topic_len, char *data, int 
     return;
 }
 
-app_config_mqtt_switch_t *app_config_mqtt_switch_create(char *prefix, char *obj_id, char *name, app_config_mqtt_switch_handler_t cmd_handler, bool discovery, void *user_data){
+app_config_mqtt_switch_t *app_config_mqtt_switch_create(char *prefix, char *obj_id, char *name, app_config_mqtt_switch_handler_t cmd_handler, bool discovery, bool retain, void *user_data){
     ESP_LOGD(TAG, "Creating MQTT switch");
     app_config_mqtt_switch_t *sw = (app_config_mqtt_switch_t *)malloc(sizeof(app_config_mqtt_switch_t));
+    sw->retain = retain;
     sw->user_data = user_data;
     sw->cmd_handler = cmd_handler;
     int state_topic_len = strlen(prefix) + strlen(obj_id) + strlen(CONFIG_APP_CONFIG_MQTT_SWITCH_STATE_STR) + 3;
@@ -88,7 +89,7 @@ app_config_mqtt_switch_t *app_config_mqtt_switch_create(char *prefix, char *obj_
         snprintf(disc_topic, disc_topic_len, "%s/%s/%s/%s", std_mqtt_prefix, "switch", obj_id, "config");
         snprintf(disc_data, disc_data_len, "{\"name\":\"%s\",\"stat_t\":\"%s\",\"cmd_t\":\"%s\",\"avty_t\":\"%s\",\"pl_on\":\"%s\",\"pl_off\":\"%s\",\"stat_on\":\"%s\",\"stat_off\":\"%s\",\"qos\":0,\"ret\":false}", name, sw->state_topic, sw->cmd_topic, sw->avail_topic, sw->payload_on, sw->payload_off, sw->payload_on, sw->payload_off);
         ESP_LOGD(TAG, "Sending discovery:\n%s\nto %s", disc_data, disc_topic);
-        app_config_mqtt_publish(disc_topic, disc_data, 0);
+        app_config_mqtt_publish(disc_topic, disc_data, retain);
         free(disc_topic);
         free(disc_data);
     }
@@ -109,7 +110,7 @@ esp_err_t app_config_mqtt_switch_delete(app_config_mqtt_switch_t *sw){
 
 void app_config_mqtt_switch_publish(app_config_mqtt_switch_t *sw){
     ESP_LOGD(TAG, "Publishing state %d to %s", sw->state, sw->state_topic);
-    app_config_mqtt_publish(sw->state_topic, sw->state ? sw->payload_on : sw->payload_off, false);
+    app_config_mqtt_publish(sw->state_topic, sw->state ? sw->payload_on : sw->payload_off, sw->retain);
 }
 
 void app_config_mqtt_switch_set(uint8_t state, app_config_mqtt_switch_t *sw){
