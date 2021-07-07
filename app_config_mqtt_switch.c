@@ -78,7 +78,7 @@ app_config_mqtt_switch_t *app_config_mqtt_switch_create(char *prefix, char *obj_
             ESP_LOGE(TAG, "Error allocation %d for disc topic", disc_topic_len);
             return sw;
         }
-        int disc_data_len = strlen("{\"name\":\"\",\"stat_t\":\"\",\"cmd_t\":\"\",\"avty_t\":\"\",\"pl_on\":\"\",\"pl_off\":\"\",\"stat_on\":\"\",\"stat_off\":\"\",\"qos\":0,\"ret\":false}") + strlen(name) + strlen(sw->state_topic) + strlen(sw->cmd_topic) + strlen(sw->avail_topic) + strlen(sw->payload_on) + strlen(sw->payload_off) + strlen(sw->payload_on) + strlen(sw->payload_off) + 1;
+        int disc_data_len = strlen("{\"name\":\"\",\"stat_t\":\"\",\"cmd_t\":\"\",\"avty_t\":\"\",\"pl_on\":\"\",\"pl_off\":\"\",\"stat_on\":\"\",\"stat_off\":\"\",\"qos\":1,\"ret\":}") + strlen(name) + strlen(sw->state_topic) + strlen(sw->cmd_topic) + strlen(sw->avail_topic) + strlen(sw->payload_on) + strlen(sw->payload_off) + strlen(sw->payload_on) + strlen(sw->payload_off) + (sw->retain ? strlen("true") : strlen("false")) + 1;
         ESP_LOGD(TAG, "Discovery data length %d", disc_data_len);
         char *disc_data = (char *)malloc(disc_data_len);
         if(!disc_data){
@@ -87,7 +87,7 @@ app_config_mqtt_switch_t *app_config_mqtt_switch_create(char *prefix, char *obj_
             return sw;
         }
         snprintf(disc_topic, disc_topic_len, "%s/%s/%s/%s", std_mqtt_prefix, "switch", obj_id, "config");
-        snprintf(disc_data, disc_data_len, "{\"name\":\"%s\",\"stat_t\":\"%s\",\"cmd_t\":\"%s\",\"avty_t\":\"%s\",\"pl_on\":\"%s\",\"pl_off\":\"%s\",\"stat_on\":\"%s\",\"stat_off\":\"%s\",\"qos\":0,\"ret\":false}", name, sw->state_topic, sw->cmd_topic, sw->avail_topic, sw->payload_on, sw->payload_off, sw->payload_on, sw->payload_off);
+        snprintf(disc_data, disc_data_len, "{\"name\":\"%s\",\"stat_t\":\"%s\",\"cmd_t\":\"%s\",\"avty_t\":\"%s\",\"pl_on\":\"%s\",\"pl_off\":\"%s\",\"stat_on\":\"%s\",\"stat_off\":\"%s\",\"qos\":1,\"ret\":%s}", name, sw->state_topic, sw->cmd_topic, sw->avail_topic, sw->payload_on, sw->payload_off, sw->payload_on, sw->payload_off, sw->retain ? "true" : "false");
         ESP_LOGD(TAG, "Sending discovery:\n%s\nto %s", disc_data, disc_topic);
         app_config_mqtt_publish(disc_topic, disc_data, retain);
         free(disc_topic);
