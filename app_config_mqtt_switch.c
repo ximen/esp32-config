@@ -1,4 +1,4 @@
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+//#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #include "esp_err.h"
 #include "esp_log.h"
 #include "app_config_mqtt.h"
@@ -63,8 +63,7 @@ app_config_mqtt_switch_t *app_config_mqtt_switch_create(char *prefix, char *obj_
     sw->payload_on = CONFIG_APP_CONFIG_MQTT_SWITCH_ON_STR;
     sw->payload_off = CONFIG_APP_CONFIG_MQTT_SWITCH_OFF_STR;
     sw->state = 0;
-    sw->qos = 0;
-    sw->retain = 0;
+    sw->qos = 1;
 
     app_config_mqtt_subscribe(sw->cmd_topic, app_config_mqtt_switch_handler, sw);
 
@@ -78,7 +77,7 @@ app_config_mqtt_switch_t *app_config_mqtt_switch_create(char *prefix, char *obj_
             ESP_LOGE(TAG, "Error allocation %d for disc topic", disc_topic_len);
             return sw;
         }
-        int disc_data_len = strlen("{\"name\":\"\",\"stat_t\":\"\",\"cmd_t\":\"\",\"avty_t\":\"\",\"pl_on\":\"\",\"pl_off\":\"\",\"stat_on\":\"\",\"stat_off\":\"\",\"qos\":1,\"ret\":}") + strlen(name) + strlen(sw->state_topic) + strlen(sw->cmd_topic) + strlen(sw->avail_topic) + strlen(sw->payload_on) + strlen(sw->payload_off) + strlen(sw->payload_on) + strlen(sw->payload_off) + (sw->retain ? strlen("true") : strlen("false")) + 1;
+        int disc_data_len = strlen("{\"name\":\"\",\"stat_t\":\"\",\"cmd_t\":\"\",\"avty_t\":\"\",\"pl_on\":\"\",\"pl_off\":\"\",\"stat_on\":\"\",\"stat_off\":\"\",\"qos\":,\"ret\":}") + strlen(name) + strlen(sw->state_topic) + strlen(sw->cmd_topic) + strlen(sw->avail_topic) + strlen(sw->payload_on) + strlen(sw->payload_off) + strlen(sw->payload_on) + strlen(sw->payload_off) + (sw->retain ? strlen("true") : strlen("false")) + 2;
         ESP_LOGD(TAG, "Discovery data length %d", disc_data_len);
         char *disc_data = (char *)malloc(disc_data_len);
         if(!disc_data){
@@ -87,7 +86,7 @@ app_config_mqtt_switch_t *app_config_mqtt_switch_create(char *prefix, char *obj_
             return sw;
         }
         snprintf(disc_topic, disc_topic_len, "%s/%s/%s/%s", std_mqtt_prefix, "switch", obj_id, "config");
-        snprintf(disc_data, disc_data_len, "{\"name\":\"%s\",\"stat_t\":\"%s\",\"cmd_t\":\"%s\",\"avty_t\":\"%s\",\"pl_on\":\"%s\",\"pl_off\":\"%s\",\"stat_on\":\"%s\",\"stat_off\":\"%s\",\"qos\":1,\"ret\":%s}", name, sw->state_topic, sw->cmd_topic, sw->avail_topic, sw->payload_on, sw->payload_off, sw->payload_on, sw->payload_off, sw->retain ? "true" : "false");
+        snprintf(disc_data, disc_data_len, "{\"name\":\"%s\",\"stat_t\":\"%s\",\"cmd_t\":\"%s\",\"avty_t\":\"%s\",\"pl_on\":\"%s\",\"pl_off\":\"%s\",\"stat_on\":\"%s\",\"stat_off\":\"%s\",\"qos\":%d,\"ret\":%s}", name, sw->state_topic, sw->cmd_topic, sw->avail_topic, sw->payload_on, sw->payload_off, sw->payload_on, sw->payload_off, sw->qos, sw->retain ? "true" : "false");
         ESP_LOGD(TAG, "Sending discovery:\n%s\nto %s", disc_data, disc_topic);
         app_config_mqtt_publish(disc_topic, disc_data, retain);
         free(disc_topic);
