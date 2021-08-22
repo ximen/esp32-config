@@ -3,6 +3,7 @@ set(srcs  "app_config.c"
           "app_config_http.c" 
           "app_config_mqtt.c" 
           "app_config_mqtt_switch.c" 
+          "app_config_mqtt_light.c" 
           "app_config_mqtt_binary_sensor.c")
 set(reqs nvs_flash esp_http_server json bt mqtt)
 

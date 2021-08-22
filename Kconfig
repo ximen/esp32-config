@@ -131,6 +131,18 @@ menu "ESP32-Config"
                 help
                     Default string for MQTT switch's OFF-state payload
         endmenu # MQTT Switch
+        menu "MQTT Light"
+            config APP_CONFIG_MQTT_LIGHT_BRIGHTNESS_STATE_STR
+                string "MQTT light brightness state topic suffix"
+                default "/brightness"
+                help
+                    Default suffix string to create MQTT light's brightness state topic string
+            config APP_CONFIG_MQTT_LIGHT_BRIGHTNESS_CMD_STR
+                string "MQTT light brightness command topic suffix"
+                default "/brightness/set"
+                help
+                    Default suffix string to create MQTT light's brightness command topic string
+        endmenu # MQTT Light
     endmenu # "MQTT options"
 
 endmenu # ESP32-Config
