@@ -4,6 +4,8 @@
 extern "C" {
 #endif
 
+#include "esp_err.h"
+
 typedef struct app_config_mqtt_switch app_config_mqtt_switch_t;
 
 typedef void(*app_config_mqtt_switch_handler_t)(uint8_t state, app_config_mqtt_switch_t *sw);

@@ -5,6 +5,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include "esp_err.h"
 
 typedef struct {                // basic light states
     uint8_t     onoff;
