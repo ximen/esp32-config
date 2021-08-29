@@ -166,7 +166,7 @@ inc_config_init = '''esp_err_t app_config_ble_mesh_init(app_config_cbs_t *cbs)
     ESP_LOGI(TAG, "Setting mesh callbacks");
     if (cbs->config_srv) esp_ble_mesh_register_config_server_callback(cbs->config_srv);        
     if (cbs->generic_srv) esp_ble_mesh_register_generic_server_callback(cbs->generic_srv);
-    if (cbs->sensor_client) esp_ble_mesh_register_sensor_client_callback(cbs->sensor_client);
+    {1}if (cbs->sensor_client) esp_ble_mesh_register_sensor_client_callback(cbs->sensor_client);
 
     ESP_LOGI(TAG, "BLE Mesh Node initialized");
 
@@ -180,6 +180,8 @@ models_arrays = ""
 elements_array = inc_config_elements
 elements_models = ""
 clients_declarations = ""
+
+got_sensor_client = False
 
 # Defining models
 element_num = 0
@@ -201,6 +203,7 @@ for element in conf["elements"]:
                 models_def         += inc_config_level_server_def.format(model["short_name"], model["short_name"] + "_pub")
                 element_sig_models += inc_config_level_server_arr.format(model["short_name"], model["short_name"] + "_pub")
             elif model["model"] == "generic_sensor_client":
+                got_sensor_client = True
                 print("Generic sensor client found: {0}".format(model["short_name"]))
                 models_def += "static esp_ble_mesh_client_t {0};\n".format(model["short_name"])
                 element_sig_models += inc_config_sensor_client_arr.format(model["short_name"])
@@ -220,6 +223,6 @@ output = inc_config_includes + \
     inc_config_composition + \
     inc_config_provision + \
     inc_config_bt_init + \
-    inc_config_init.format(conf["device_name"])
+    inc_config_init.format(conf["device_name"], "" if got_sensor_client else "//")
     
 h_file.write(output)

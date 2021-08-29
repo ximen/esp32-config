@@ -46,25 +46,19 @@ def xxd():
 
 
 # Determines if topic is standard
+std_topics = ["std_wifi", "std_mqtt", "std_ble_mesh", "std_ota"]
+
 def isStdTopic(topic):
-    if topic.get("std_wifi") == True:
-        return True
-    if topic.get("std_ble_mesh") == True:
-        return True
-    if topic.get("std_mqtt") == True:
-        return True
+    for name in std_topics:
+        if topic.get(name):
+            return True
     return False
 
 def get_short_name(topic):
-    if not isStdTopic(topic):
-        return topic["short_name"]
-    else:
-        if topic.get("std_wifi") == True:
-            return "std_wifi_topic"
-        if topic.get("std_ble_mesh") == True:
-            return "std_ble_mesh_topic"
-        if topic.get("std_mqtt") == True:
-            return "std_mqtt_topic"
+    for name in std_topics:
+        if topic.get(name):
+            return "{name}_topic"
+    return topic["short_name"]
 
 # Open files
 with open(json_filename, "r") as json_file:
@@ -247,6 +241,17 @@ for topic in conf["topics"]:
             html += '</fieldset>\n'
         elif topic.get("std_ble_mesh") == True:
             html += '<fieldset class="table"><legend>Bluetooth Mesh settings<abbr title="This field is mandatory">*</abbr></legend>\n'
+            html += '</fieldset>\n'
+        elif topic.get("std_ota") == True:
+            html += '<fieldset class="table"><legend>OTA settings <abbr title="This field is mandatory">*</abbr></legend>\n'
+            html += '<div class="tr">\n'
+            html += '\t\t\t<div class="td right">Enable</div>\n'
+            html += '\t\t\t<div class="td"><input type="checkbox" name="std_ota_enable"></div>\n'
+            html += '</div>\n'
+            html += '<div class="tr">\n'
+            html += '\t\t\t<div class="td right">URL</div>\n'
+            html += '\t\t\t<div class="td"><input type="text" maxlength="{}" name="std_ota_url"></div>\n'.format(sdkconfig['sdk']['CONFIG_APP_CONFIG_OTA_URL_LEN'])
+            html += '</div>\n'
             html += '</fieldset>\n'
         else:
             html += '<fieldset class="table">\n'

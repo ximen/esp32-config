@@ -5,16 +5,28 @@ set(srcs  "app_config.c"
           "app_config_mqtt_switch.c" 
           "app_config_mqtt_light.c" 
           "app_config_mqtt_binary_sensor.c")
-set(reqs nvs_flash esp_http_server json bt mqtt)
+set(reqs "nvs_flash" "esp_http_server" "json" "mqtt" "bt" "esp_http_client" "esp_https_ota")
 
 if(CONFIG_APP_CONFIG_BLUETOOTH_MESH)
      list(APPEND srcs "app_config_ble_mesh.c")
      list(APPEND reqs bt)
 endif(CONFIG_APP_CONFIG_BLUETOOTH_MESH)
 
-idf_component_register(SRCS ${srcs}
+if(CONFIG_APP_CONFIG_OTA)
+     list(APPEND srcs "app_config_ota.c")
+     list(APPEND reqs "esp_http_client" "esp_https_ota")
+endif(CONFIG_APP_CONFIG_OTA)
+
+if(CONFIG_APP_CONFIG_OTA)
+     idf_component_register(SRCS ${srcs}
                        INCLUDE_DIRS "include"
-                       REQUIRES ${reqs})
+                       REQUIRES ${reqs}
+                       EMBED_TXTFILES ${project_dir}/server_certs/ca_cert.pem)
+else()
+     idf_component_register(SRCS ${srcs}
+                    INCLUDE_DIRS "include"
+                    REQUIRES ${reqs})
+endif(CONFIG_APP_CONFIG_OTA)
 
 if(NOT CMAKE_BUILD_EARLY_EXPANSION)
 

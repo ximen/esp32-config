@@ -12,18 +12,25 @@ with open(sys.argv[1] + "/" + sys.argv[2], "r") as json_file:
 
 h_file = open(sys.argv[3] + '/config_defs.h', 'w')
 
-h_file.write("#include \"app_config.h\"\n")
-h_file.write("#include \"sdkconfig.h\"\n")
-h_file.write("#include <stdbool.h>\n\n")
+h_file.write("""
+#include \"app_config.h\"
+#include \"sdkconfig.h\"
+#include <stdbool.h>
+""")
 
+std_topics = ["std_wifi", "std_mqtt", "std_ota"]
 #if conf["wifi"] == True:
 #    
 def isStdTopic(topic):
-    if topic.get("std_wifi") == True:
-        return True
-    if topic.get("std_mqtt") == True:
-        return True
+    for name in std_topics:
+        if topic.get(name):
+            return True
     return False
+#    if topic.get("std_wifi") == True:
+#        return True
+#    if topic.get("std_mqtt") == True:
+#        return True
+#    return False
 
 for topic in conf["topics"]:
     if not isStdTopic(topic):
@@ -66,6 +73,9 @@ for topic in conf["topics"]:
             h_file.write("APP_CONFIG_DEFINE_STD_MQTT(\"" + topic["name"] + "\", 1883, true)\n")
         else:
             h_file.write("APP_CONFIG_DEFINE_STD_MQTT(\"" + topic["name"] + "\", 1883, false)\n")
+    elif topic.get("std_ota") == True:
+            h_file.write("\n#define\t\tAPP_CONFIG_STD_OTA\t1\n");
+            h_file.write("APP_CONFIG_DEFINE_STD_OTA()\n");
     else:
         h_file.write("\nstatic app_config_element_t config_" + topic["short_name"] + "_elements[] = {\n")
         for elt in topic["elements"]:
@@ -89,6 +99,8 @@ for topic in conf["topics"]:
         h_file.write("\tAPP_CONFIG_DEFINE_TOPIC(std_wifi_topic , \"" + topic["name"] + "\", config_std_wifi_elements),\n")
     elif topic.get("std_mqtt") == True:
         h_file.write("\tAPP_CONFIG_DEFINE_TOPIC(std_mqtt_topic , \"" + topic["name"] + "\", config_std_mqtt_elements),\n")
+    elif topic.get("std_ota") == True:
+        h_file.write("\tAPP_CONFIG_DEFINE_TOPIC(std_ota_topic , \"" + topic["name"] + "\", config_std_ota_elements),\n")
     else:
         h_file.write("\tAPP_CONFIG_DEFINE_TOPIC(" + topic["short_name"] + ", \"" + topic["name"] + "\", config_" + topic["short_name"] + "_elements),\n")
 h_file.write("};\n\n")

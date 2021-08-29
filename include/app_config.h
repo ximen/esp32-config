@@ -85,14 +85,22 @@ typedef struct {
 		static char std_mqtt_prefix[CONFIG_APP_CONFIG_MQTT_PREFIX_LEN] = "homeassistant"; \
 		static char std_mqtt_objid[CONFIG_APP_CONFIG_MQTT_OBJID_LEN] = "esp"; \
 		static bool std_mqtt_disc = _disc; \
-		static app_config_element_t config_std_mqtt_elements[] = { \
-		APP_CONFIG_DEFINE_STRING(std_mqtt_broker, "Broker"), \
-		APP_CONFIG_DEFINE_INT16(std_mqtt_port, "Port"), \
-		APP_CONFIG_DEFINE_STRING(std_mqtt_user, "Username"), \
-		APP_CONFIG_DEFINE_STRING(std_mqtt_pass, "Password"), \
-		APP_CONFIG_DEFINE_STRING(std_mqtt_prefix, "Prefix"), \
-		APP_CONFIG_DEFINE_STRING(std_mqtt_objid, "Object ID"), \
+		static app_config_element_t config_std_mqtt_elements[] = { 	\
+		APP_CONFIG_DEFINE_STRING(std_mqtt_broker, "Broker"), 		\
+		APP_CONFIG_DEFINE_INT16(std_mqtt_port, "Port"), 			\
+		APP_CONFIG_DEFINE_STRING(std_mqtt_user, "Username"), 		\
+		APP_CONFIG_DEFINE_STRING(std_mqtt_pass, "Password"), 		\
+		APP_CONFIG_DEFINE_STRING(std_mqtt_prefix, "Prefix"), 		\
+		APP_CONFIG_DEFINE_STRING(std_mqtt_objid, "Object ID"), 		\
 		APP_CONFIG_DEFINE_BOOL(std_mqtt_disc, "Discovery")};
+#ifdef CONFIG_APP_CONFIG_OTA
+#define APP_CONFIG_DEFINE_STD_OTA()									\
+		static bool std_ota_enable = false;							\
+		static char std_ota_url[CONFIG_APP_CONFIG_OTA_URL_LEN];		\
+		static app_config_element_t config_std_ota_elements[] = {	\
+		APP_CONFIG_DEFINE_BOOL(std_ota_enable, "Enable"),			\
+		APP_CONFIG_DEFINE_STRING(std_ota_url, "URL")}; 		
+#endif
 
 // Structure defining callbacks
 typedef struct {

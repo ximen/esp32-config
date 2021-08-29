@@ -20,6 +20,9 @@
 #include "esp_ble_mesh_networking_api.h"
 #endif
 #include "app_config_mqtt.h"
+#ifdef CONFIG_APP_CONFIG_OTA
+#include "app_config_ota.h"
+#endif
 
 #define TAG "APP_CONFIG"
 static nvs_handle_t app_config_nvs_hanle;
@@ -280,6 +283,14 @@ esp_err_t app_config_init(app_config_cbs_t *cbs){
 		ESP_ERROR_CHECK(app_config_wifi_init());
 		ESP_ERROR_CHECK(app_config_http_init());
 	}
+
+#ifdef CONFIG_APP_CONFIG_OTA
+	if(APP_CONFIG_STD_OTA) {
+		ESP_LOGD(TAG, "STD_OTA defined. Starting OTA routines");
+		ESP_ERROR_CHECK(app_config_ota_init());
+	}
+#endif
+
 #ifdef CONFIG_APP_CONFIG_BLUETOOTH_MESH
 	// Starting BLE Mesh
 	bool config_mesh_enable;

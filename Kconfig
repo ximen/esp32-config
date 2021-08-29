@@ -60,6 +60,12 @@ menu "ESP32-Config"
         help
             Generate code for Bluetooth Mesh elements.
 
+    config APP_CONFIG_OTA
+        bool "Over-the-air update support"
+        default y
+        help
+            Generate code for OTA updates.
+
     config APP_CONFIG_BLE_MESH_FILE_NAME
         string "BLE Mesh configuration filename"
         default "conf_ble_mesh.json"
@@ -144,5 +150,13 @@ menu "ESP32-Config"
                     Default suffix string to create MQTT light's brightness command topic string
         endmenu # MQTT Light
     endmenu # "MQTT options"
+    menu "OTA"
+        config APP_CONFIG_OTA_URL_LEN
+            int "OTA URL length"
+            default 50
+            depends on APP_CONFIG_OTA
+            help
+                URL length to check updates
+    endmenu # "OTA"
 
 endmenu # ESP32-Config
