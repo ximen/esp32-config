@@ -128,6 +128,8 @@ function fillValues(config){{
                 input.value = elt.value;
             }} else if (elt.type == "string") {{
                 input.value = elt.value;
+            }} else if (elt.type == "decimal") {{
+                input.value = elt.value;
             }}
         }}
     }}
@@ -189,6 +191,8 @@ for topic in conf["topics"]:
                 html += '\t\t\t<div class="td"><input type="number" max="65535" name="{0}"></div>\n'.format(elt["short_name"])
             if elt["type"] == "int32":
                 html += '\t\t\t<div class="td"><input type="number" name="{0}"></div>\n'.format(elt["short_name"])
+            if elt["type"] == "decimal":
+                html += '\t\t\t<div class="td"><input type="number" step="any" name="{0}"></div>\n'.format(elt["short_name"])
             html += '</div>\n'
         html += '</fieldset>\n'
     else:

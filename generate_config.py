@@ -47,6 +47,11 @@ for topic in conf["topics"]:
                     h_file.write("static char\t" + elt["short_name"] + "[" + str(elt["size"]) + "] = \"{0}\";\n".format(elt["default"]))
                 else:
                     h_file.write("static char\t" + elt["short_name"] + "[" + str(elt["size"]) + "];\n")
+            if elt["type"] == "decimal":
+                if elt.get("default"):
+                    h_file.write("static float\t {0} = {1};\n".format(elt["short_name"], elt["default"]));
+                else:
+                    h_file.write("static uint8_t\t" + elt["short_name"] + ";\n")
             if elt["type"] == "int8":
                 if elt.get("default"):
                     h_file.write("static uint8_t\t {0} = {1};\n".format(elt["short_name"], elt["default"]));
@@ -91,6 +96,8 @@ for topic in conf["topics"]:
                 h_file.write("\tAPP_CONFIG_DEFINE_INT8(" + elt["short_name"] + ", \"" + elt["name"] + "\"),\n")
             if elt["type"] == "int32":
                 h_file.write("\tAPP_CONFIG_DEFINE_INT8(" + elt["short_name"] + ", \"" + elt["name"] + "\"),\n")
+            if elt["type"] == "decimal":
+                h_file.write("\tAPP_CONFIG_DEFINE_DECIMAL(" + elt["short_name"] + ", \"" + elt["name"] + "\"),\n")
         h_file.write("};\n\n")
 
 h_file.write("static app_config_topic_t conf_topics[] = {\n")

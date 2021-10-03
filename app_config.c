@@ -64,6 +64,11 @@ esp_err_t app_config_load_element(app_config_element_t *element){
 		err = nvs_get_u32(app_config_nvs_hanle, element->short_name, element->value);
 		ESP_LOGD(TAG, "Got %d", *(uint32_t *)element->value);
 		break;
+	case decimal:;
+		size_t len = sizeof(float);
+		err = nvs_get_blob(app_config_nvs_hanle, element->short_name, element->value, &len);
+		ESP_LOGD(TAG, "Got %f", *(float *)element->value);
+		break;
 	default:
 		break;
 	}
@@ -126,6 +131,9 @@ esp_err_t app_config_save_element(app_config_element_t *element){
 	case int32:
 		err = nvs_set_u32(app_config_nvs_hanle, element->short_name, *(uint32_t *)element->value);
 		break;
+	case decimal:
+		err = nvs_set_blob(app_config_nvs_hanle, element->short_name, (void *)element->value, sizeof(float));
+		break;
 	default:
 		break;
 	}
@@ -178,6 +186,7 @@ esp_err_t app_config_getValue(const char* element, enum app_config_element_type_
 		if(type == int32) *(int32_t *)value = *(int32_t *)elt->value;		
 		if(type == array) *(char **)value = (char *)elt->value;
 		if(type == string) *(char **)value = (char *)elt->value;
+		if(type == decimal) *(float *)value = *(float *)elt->value;
 		return ESP_OK;
 	} else {
 		return ESP_ERR_NOT_FOUND;
@@ -223,8 +232,11 @@ esp_err_t app_config_setValue(const char* element, void *value){
 			break;		
 		case string:
 			strncpy((char *)elt->value, (char *)value, elt->size);
-			ESP_LOGI(TAG, "Setting %s, value %s, size %d", elt->short_name, (char *)elt->value, elt->size);
-			break;		
+			ESP_LOGD(TAG, "Setting %s, value %s, size %d", elt->short_name, (char *)elt->value, elt->size);
+			break;	
+		case decimal:
+			*(float *)elt->value = *(float *)value;	
+			break;
 		default:
 			ESP_LOGD(TAG, "Wrong type");
 			return ESP_ERR_INVALID_ARG;
@@ -238,6 +250,10 @@ esp_err_t app_config_setValue(const char* element, void *value){
 
 esp_err_t app_config_getBool(const char* element, bool *value){
 	return app_config_getValue(element, boolean, value);
+}
+
+esp_err_t app_config_getFloat(const char* element, float *value){
+	return app_config_getValue(element, decimal, value);
 }
 
 esp_err_t app_config_getArray(const char* element, char **value){
@@ -389,6 +405,16 @@ char *app_config_toJSON(){
 						return NULL;
         			}
 					if (cJSON_AddNumberToObject(element, "value", *(uint32_t *)app_conf.topics[i].elements[j].value) == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
+				break;
+				case decimal:
+					if (cJSON_AddStringToObject(element, "type", "decimal") == NULL){
+	   			   		cJSON_Delete(json_conf);
+						return NULL;
+        			}
+					if (cJSON_AddNumberToObject(element, "value", *(float *)app_conf.topics[i].elements[j].value) == NULL){
 	   			   		cJSON_Delete(json_conf);
 						return NULL;
         			}

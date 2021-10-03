@@ -114,6 +114,37 @@ esp_err_t app_http_get_int_value(char *string, char *name, int32_t *value){
     return ESP_ERR_NOT_FOUND;
 }
 
+esp_err_t app_http_get_decimal_value(char *string, char *name, float *value){
+    ESP_LOGD(TAG, "Getting decimal value %s\n", name);
+    char *buf = malloc(strlen(string) + 1);
+    if (!buf) {
+        ESP_LOGE(TAG, "Error allocating buffer. Get int failed.");
+        return ESP_ERR_NO_MEM;
+    }
+    strcpy(buf, string);
+    char *end_str;
+    char* token = strtok_r(buf, "&", &end_str); 
+    while (token) {
+        char *end_token;
+        char* key = strtok_r(token, "=", &end_token); 
+        char *val = strtok_r(NULL, "=", &end_token);
+        if(!val){
+            val="";
+        }
+        token = strtok_r(NULL, "&", &end_str);
+        if(!strcmp(name, key)){
+            float v = strtof(val, (char **)NULL);
+            ESP_LOGD(TAG, "Found: %f\n", v);
+            *value = v;
+            free(buf);
+            return ESP_OK;
+        }
+    }
+    free(buf);
+    ESP_LOGD(TAG, "Not found");
+    return ESP_ERR_NOT_FOUND;
+}
+
 esp_err_t app_http_get_string_value(char *string, char *name, char *value){
     ESP_LOGD(TAG, "Getting string value %s\n", name);
     char *buf = malloc(strlen(string) + 1);
@@ -217,6 +248,11 @@ esp_err_t post_conf_handler(httpd_req_t *req){
                 int32_t tmp;
                 app_http_get_int_value(buf, app_conf->topics[i].elements[j].short_name, &tmp);
                 ESP_LOGD(TAG, "Got %d", tmp);
+                app_config_setValue(app_conf->topics[i].elements[j].short_name, &tmp);
+            } else if (app_conf->topics[i].elements[j].type == decimal){
+                float tmp;
+                app_http_get_decimal_value(buf, app_conf->topics[i].elements[j].short_name, &tmp);
+                ESP_LOGD(TAG, "Got %f", tmp);
                 app_config_setValue(app_conf->topics[i].elements[j].short_name, &tmp);
             } else if (app_conf->topics[i].elements[j].type == array){
                 char tmp[100];

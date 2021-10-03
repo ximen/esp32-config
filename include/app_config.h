@@ -32,7 +32,8 @@ enum app_config_element_type_t{
 	int16,
 	int32,
 	string,
-	array
+	array,
+	decimal
 };
 
 // Structure defines single configuration property 
@@ -63,6 +64,7 @@ typedef struct {
 
 
 #define APP_CONFIG_DEFINE_BOOL(_short, _name)  { _name, #_short, boolean, sizeof(_short), &_short}
+#define APP_CONFIG_DEFINE_DECIMAL(_short, _name)  { _name, #_short, decimal, sizeof(_short), &_short}
 #define APP_CONFIG_DEFINE_INT8(_short, _name)  { _name, #_short, int8, sizeof(_short), &_short}
 #define APP_CONFIG_DEFINE_INT16(_short, _name)  { _name, #_short, int16, sizeof(_short), &_short}
 #define APP_CONFIG_DEFINE_INT32(_short, _name)  { _name, #_short, int32, sizeof(_short), &_short}
@@ -154,6 +156,20 @@ app_config_t *app_config_get();
  *             - one of the error codes in other case
 */
 esp_err_t app_config_getBool(const char* element, bool *value);
+
+/**
+ * @brief      Returns float value from stored configuration
+ *
+ * Returns value of float element by its name
+ *
+ * @param[in]   element  Name (label) of the required element
+ * @param[out]  value    Pointer to float variable for returning value
+ *
+ * @return
+ *             - ESP_OK if configuration was initialized successfully
+ *             - one of the error codes in other case
+*/
+esp_err_t app_config_getFloat(const char* element, float *value);
 
 /**
  * @brief      Returns array from stored configuration
